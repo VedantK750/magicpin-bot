@@ -1,0 +1,207 @@
+EVALUATION RUN - 2026-05-01T03:24:50.842289
+================================================================================
+
+TRIGGER: trg_001_research_digest_dentists
+MERCHANT: m_001_drmeera_dentist_delhi
+SCORE: 43/50
+BREAKDOWN: Spec:9, Cat:10, Merch:9, Dec:8, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Meera, quick update for Dr. Meera's Dental Clinic: 3-month fluoride varnish recall outperforms 6-month for high-risk adult caries. Want me to draft a 2-line message you can send today? — JIDA Oct 2026, p.14
+----------------------------------------
+RATIONALE: The message includes a verifiable fact (3-month vs 6-month fluoride varnish recall for high-risk adults), cites a specific source (JIDA Oct 2026, p.14), and references a concrete time frame (today). No fabricated data. Perfectly matches the peer_clinical voice for dentists: uses clinical terminology (fluoride varnish, high-risk adult caries), cites a dental journal, and addresses the merchant as 'Dr. Meera's Dental Clinic' with a professional, evidence-based tone. Uses the owner's name 'Meera' correctly, references the clinic name, and aligns with the English language preference. However, does not incorporate the active offer (Dental Cleaning @ ₹299) or the specific performance data (views, calls, CTR) for deeper personalization.
+
+================================================================================
+
+TRIGGER: trg_002_compliance_dci_radiograph
+MERCHANT: m_001_drmeera_dentist_delhi
+SCORE: 43/50
+BREAKDOWN: Spec:9, Cat:10, Merch:9, Dec:8, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Meera, quick update for Dr. Meera's Dental Clinic: DCI revised radiograph dose limits effective 2026-12-15. Want me to draft a 2-line message you can send today? — Dental Council of India circular 2026-11-04
+----------------------------------------
+RATIONALE: The message includes a verifiable fact: the DCI revised radiograph dose limits effective 2026-12-15, and cites the Dental Council of India circular dated 2026-11-04. This is highly specific and actionable. Perfectly matches the peer_clinical voice for dentists: uses technical regulatory language ('DCI revised radiograph dose limits'), addresses the owner as 'Meera' (not overly formal), and avoids taboos. The tone is professional and peer-to-peer. Uses the owner's name 'Meera' and clinic name correctly. References a regulation relevant to dentists. However, it does not incorporate the merchant's actual performance data (views, calls, CTR) or active offers, which would have made it more personalized.
+
+================================================================================
+
+TRIGGER: trg_004_perf_dip_bharat
+MERCHANT: m_002_bharat_dentist_mumbai
+SCORE: 39/50
+BREAKDOWN: Spec:8, Cat:7, Merch:9, Dec:8, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Bharat, quick signal for Bharat Dental Care: your calls are down 50.0% on this cycle. Want me to draft a focused next-step plan for today?
+----------------------------------------
+RATIONALE: The message includes a verifiable fact: calls are down 50.0%, which matches the trigger payload delta_pct of -0.5. However, it lacks a specific date or time reference and does not cite a source, though the data is from the trigger. The voice is appropriately clinical and peer-to-peer for a dentist, using 'Bharat' (owner name) and 'draft a focused next-step plan' which fits the professional tone. However, it could be more technical or reference dental practice specifics to fully align with peer_clinical. The message uses the owner's name 'Bharat' and the business name 'Bharat Dental Care' correctly. It references their actual performance data (calls down 50%) without fabrication. Language preference is honored (English used, which is in their list).
+
+================================================================================
+
+TRIGGER: trg_005_renewal_due_bharat
+MERCHANT: m_002_bharat_dentist_mumbai
+SCORE: 34/50
+BREAKDOWN: Spec:7, Cat:8, Merch:6, Dec:7, Eng:6, Pen:-0
+----------------------------------------
+MESSAGE:
+Hi Bharat, Bharat Dental Care's Pro plan is set to renew in 12 days (your profile hit 980 views this month!). I've prepared a summary of your wins this month to help you decide. Want me to send it?
+----------------------------------------
+RATIONALE: The message includes a verifiable fact (12 days remaining, 980 views) but lacks a specific source citation or breakdown of the 'summary of wins'. The peer_clinical voice is appropriate for a dentist, using professional language ('Pro plan', 'profile') without being overly technical or violating taboos. Uses the merchant name and owner name correctly, but does not reference any actual data from the merchant's performance beyond views (e.g., calls, CTR, or local language preference).
+
+================================================================================
+
+TRIGGER: trg_006_festival_diwali
+MERCHANT: m_003_studio11_salon_hyderabad
+SCORE: 23/50
+BREAKDOWN: Spec:3, Cat:6, Merch:5, Dec:4, Eng:5, Pen:-0
+----------------------------------------
+MESSAGE:
+Hi Lakshmi, the upcoming festival is coming up on 2026-10-31. It's a great time to engage your regulars with a festive offer. Want me to draft a greetings post + a special discount story for you?
+----------------------------------------
+RATIONALE: The message mentions the festival date (2026-10-31) but lacks any verifiable numbers, percentages, or concrete data from the merchant's performance or offers. It is vague about the 'festive offer' and does not cite specific facts. The warm_practical voice is partially achieved with a friendly tone, but the message reads more like a generic marketing suggestion rather than a salon-specific practical tip (e.g., mentioning Diwali grooming packages). It misses the salon context of services like haircuts or spa. Uses the owner's name 'Lakshmi' correctly and references the festival, but does not incorporate any of the merchant's actual data (e.g., views, calls, offers like 'Haircut @ ₹99'). It feels templated and not personalized to Studio11 Family Salon.
+
+================================================================================
+
+TRIGGER: trg_008_curious_ask_studio11
+MERCHANT: m_003_studio11_salon_hyderabad
+SCORE: 31/50
+BREAKDOWN: Spec:3, Cat:8, Merch:7, Dec:6, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Hi Lakshmi! Quick check — what service or product has been most asked-for this week at Studio11 Family Salon? I'll turn your answer into a Google post + a 4-line WhatsApp reply you can use for customer queries. Takes 2 min.
+----------------------------------------
+RATIONALE: The message lacks verifiable facts like numbers, dates, or source citations. It only mentions 'this week' vaguely and '2 min' as a time estimate, but no concrete data from the trigger payload (e.g., views, calls, offers) is used. The voice is warm and practical, fitting a salon. It avoids taboos and uses a friendly, helpful tone. However, it could be slightly more personalized to a salon context (e.g., mentioning specific services like haircut or spa). Uses the owner's name 'Lakshmi' and the salon name 'Studio11 Family Salon' correctly. Does not reference actual performance data (e.g., 4980 views, 62 calls) which would improve fit. Language preference is honored (English).
+
+================================================================================
+
+TRIGGER: trg_009_winback_glamour
+MERCHANT: m_004_glamour_salon_pune
+SCORE: 37/50
+BREAKDOWN: Spec:7, Cat:8, Merch:8, Dec:7, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Anjali, it might be a good time to restart your growth plan. 24 of your regulars haven't visited in a while. Want me to draft a 'welcome back' offer to re-engage them today?
+----------------------------------------
+RATIONALE: The message includes a verifiable number (24 lapsed customers) from the trigger payload, but lacks specific dates, percentages beyond the trigger, or source citations. The warm and practical voice fits a salon well, using friendly language and a helpful offer, though it could be slightly more personal for a salon context. Uses the owner's name 'Anjali' correctly and references actual data (24 lapsed customers), but does not mention the locality or language preference.
+
+================================================================================
+
+TRIGGER: trg_011_review_theme_late_delivery
+MERCHANT: m_005_pizzajunction_restaurant_delhi
+SCORE: 39/50
+BREAKDOWN: Spec:7, Cat:8, Merch:9, Dec:8, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Suresh, a few reviews across 4 recent reviews mentioned 'delivery_late' (e.g., "took 50 mins for a 15 min ride"). Want me to draft a professional response to address this and keep your rating high?
+----------------------------------------
+RATIONALE: The message references a specific number (4 reviews), a direct quote from a customer, and the delivery_late theme, but lacks concrete data like average delivery time or specific dates. The warm_busy_practical voice is well-executed with a direct, helpful tone that suits a restaurant operator, though it could be more operator-to-operator by offering a specific fix (e.g., adjusting delivery zones). Uses the owner's name 'Suresh' correctly and references actual review data from the trigger payload, honoring the English language preference without fabrication.
+
+================================================================================
+
+TRIGGER: trg_012_milestone_mylari
+MERCHANT: m_006_southindiancafe_restaurant_bangalore
+SCORE: 34/50
+BREAKDOWN: Spec:6, Cat:8, Merch:7, Dec:6, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Congratulations Suresh! You're just 5 steps away from the 150 Google reviews milestone - Mylari South Indian Cafe just reached 145 Google reviews! This social proof is great for attracting new customers. Want me to draft a 'Thank You' post?
+----------------------------------------
+RATIONALE: The message includes the specific number 145 reviews and the milestone of 150, but lacks a source citation or date. The '5 steps away' phrasing is vague and not a verifiable fact. The warm and practical voice fits a restaurant well, but the message could be more operator-to-operator and less congratulatory, which feels slightly generic for a busy restaurant owner. Uses the owner's name 'Suresh' and the restaurant name correctly, but does not reference any actual data from the merchant's performance (e.g., views, calls) or language preference.
+
+================================================================================
+
+TRIGGER: trg_014_seasonal_acquisition_dip_powerhouse
+MERCHANT: m_007_powerhouse_gym_bangalore
+SCORE: 37/50
+BREAKDOWN: Spec:8, Cat:7, Merch:9, Dec:6, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Karthik, quick signal for PowerHouse Fitness: your views are down 30.0% on this cycle. Want me to draft a focused next-step plan for today?
+----------------------------------------
+RATIONALE: The message includes a verifiable number (30.0% decline) and references the current cycle, but lacks a specific date or source citation for the data. The energetic and disciplined tone fits a gym, but the message is more generic and could apply to any business; lacks gym-specific language like 'workout' or 'membership'. Uses the owner's name 'Karthik' and the business name 'PowerHouse Fitness' correctly, and the language preference is honored (English).
+
+================================================================================
+
+TRIGGER: trg_018_supply_atorvastatin_recall
+MERCHANT: m_009_apollo_pharmacy_jaipur
+SCORE: 43/50
+BREAKDOWN: Spec:9, Cat:9, Merch:8, Dec:9, Eng:8, Pen:-0
+----------------------------------------
+MESSAGE:
+Ramesh, urgent supply alert: atorvastatin recall by MfrZ (batches: AT2024-1102, AT2024-1108). Want me to draft the patient notification and replacement workflow for you?
+----------------------------------------
+RATIONALE: The message includes verifiable facts: the specific molecule (atorvastatin), manufacturer (MfrZ), and affected batch numbers (AT2024-1102, AT2024-1108). No fabricated data. The tone is trustworthy and precise, fitting a pharmacy. It uses clinical language (recall, batches, patient notification) without hype or taboos. The offer to draft a workflow aligns with pharmacy compliance needs. Uses the owner's name (Ramesh) and references the pharmacy's likely need for compliance. However, it does not explicitly mention Apollo Health Plus or its specific offers/locality, missing a chance for deeper personalization.
+
+================================================================================
+
+TRIGGER: trg_020_summer_demand_shift
+MERCHANT: m_009_apollo_pharmacy_jaipur
+SCORE: 39/50
+BREAKDOWN: Spec:8, Cat:9, Merch:8, Dec:7, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Hi Ramesh, we're seeing some interesting seasonal shifts for Apollo Health Plus Pharmacy this summer 2026 (seeing ORS demand up 40%, sunscreen demand up 38%).. Want me to draft a quick post to align your listing with what customers are searching for right now?
+----------------------------------------
+RATIONALE: The message includes verifiable numbers (40% ORS demand, 38% sunscreen demand) and references the season (summer 2026), but lacks a specific date or source citation for the trend data. The tone is trustworthy and precise, avoids taboos like 'guaranteed result', and uses data-driven language appropriate for a pharmacy. The offer to draft a post aligns with the category's need for accurate health-related content. Uses the owner's name (Ramesh) and the pharmacy name correctly. References seasonal trends relevant to their business, but does not incorporate their actual performance data (views, calls, offers) or language preference (English/Hindi).
+
+================================================================================
+
+TRIGGER: trg_021_unverified_gbp_sunrise
+MERCHANT: m_010_sunrisepharm_pharmacy_lucknow
+SCORE: 39/50
+BREAKDOWN: Spec:8, Cat:9, Merch:7, Dec:8, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Vikas, I noticed your Google Business Profile isn't fully verified yet. It could boost your visibility by 30.0%! Verified profiles get more calls and directions. Want me to guide you through the 2-minute setup?
+----------------------------------------
+RATIONALE: The message includes a specific percentage (30.0%) from the trigger payload and mentions a 2-minute setup time, but lacks a source citation or concrete example of the uplift. The tone is trustworthy and precise, avoiding taboos like 'guaranteed result' or '100% safe'. It uses a factual, helpful approach appropriate for a pharmacy. Uses the owner's name 'Vikas' correctly and references the unverified GBP status from the trigger, but does not incorporate any other merchant-specific data like locality or performance metrics.
+
+================================================================================
+
+TRIGGER: trg_022_cde_webinar_dentists
+MERCHANT: m_001_drmeera_dentist_delhi
+SCORE: 34/50
+BREAKDOWN: Spec:7, Cat:8, Merch:6, Dec:7, Eng:6, Pen:-0
+----------------------------------------
+MESSAGE:
+Meera, quick update for Dr. Meera's Dental Clinic: IDA Delhi: Digital impressions — 2026 state of the art. Want me to draft a 2-line message you can send today? — IDA Delhi chapter calendar
+----------------------------------------
+RATIONALE: The message includes a specific event (IDA Delhi webinar on digital impressions) and a concrete offer (drafting a 2-line message), but lacks verifiable numbers like dates, times, or costs beyond 'free_for_members'. The peer_clinical voice is well-matched for dentists, using professional terminology ('digital impressions', 'IDA Delhi chapter') and addressing the owner as 'Meera' without being overly casual. Uses the owner's name 'Meera' correctly and references the clinic, but does not incorporate any of the merchant's actual performance data (views, calls, CTR) or active offers, missing a chance for deeper personalization.
+
+================================================================================
+
+TRIGGER: trg_023_competitor_opened_dentist
+MERCHANT: m_001_drmeera_dentist_delhi
+SCORE: 42/50
+BREAKDOWN: Spec:8, Cat:9, Merch:9, Dec:8, Eng:8, Pen:-0
+----------------------------------------
+MESSAGE:
+Meera, I noticed Smile Studio has opened just 1.3km away. They are running a Dental Cleaning @ ₹199. It's important to keep your regulars engaged now. Want me to draft a 'Loyalty Appreciation' WhatsApp to your top customers today?
+----------------------------------------
+RATIONALE: The message includes verifiable facts: competitor name (Smile Studio), distance (1.3km), competitor offer price (₹199), and a specific action (draft a 'Loyalty Appreciation' WhatsApp). However, it lacks a source citation or exact date of competitor opening beyond the trigger payload. The voice is appropriately peer_clinical for a dentist: professional, data-driven, and uses 'Dr.' prefix implicitly via the clinic name. It avoids taboos and maintains a clinical tone while being direct about competitive threat. Uses the owner's name 'Meera' correctly, references their actual locality (Lajpat Nagar) implicitly via competitor distance, and honors language preference (English). Does not fabricate data; all claims come from the trigger payload.
+
+================================================================================
+
+TRIGGER: trg_024_perf_spike_zen
+MERCHANT: m_008_zenyoga_gym_chennai
+SCORE: 37/50
+BREAKDOWN: Spec:8, Cat:7, Merch:9, Dec:7, Eng:6, Pen:-0
+----------------------------------------
+MESSAGE:
+Padma, quick signal for Zen Yoga Studio: your calls are up 15.0% on this cycle. Want me to draft a focused next-step plan for today?
+----------------------------------------
+RATIONALE: The message includes a verifiable fact: calls are up 15.0%. However, it lacks a specific date or source citation, and the percentage is rounded to one decimal, which is acceptable but not maximally precise. The voice is energetic and disciplined, fitting a gym category. However, Zen Yoga Studio is a boutique yoga studio, not a traditional gym; the tone could be slightly more serene or wellness-oriented to match the brand. Uses the owner's name 'Padma' and references the studio name 'Zen Yoga Studio' correctly. The message is personalized to this merchant, though it does not use their preferred languages (ta/hi) or reference their active offers.
+
+================================================================================
+
+TRIGGER: trg_025_dormancy_glamour
+MERCHANT: m_004_glamour_salon_pune
+SCORE: 37/50
+BREAKDOWN: Spec:7, Cat:8, Merch:9, Dec:7, Eng:6, Pen:-0
+----------------------------------------
+MESSAGE:
+Hi Anjali, It's been 38 days since we last updated your profile. Your listing is still getting views, but fresh content could help convert them. Want me to suggest a quick update for this week?
+----------------------------------------
+RATIONALE: The message includes a specific number (38 days) and references views, but lacks concrete metrics like exact view count or call numbers from the context. The warm, practical tone fits a salon well, but the phrase 'update your profile' is slightly generic and could be more salon-specific (e.g., 'refresh your service menu or photos'). Uses the owner's name 'Anjali' correctly and references their actual data (views, 38 days), honoring language preference with English.
+
+================================================================================
+

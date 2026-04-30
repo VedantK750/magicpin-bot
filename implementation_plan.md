@@ -494,18 +494,18 @@ Goal: maximize rubric scores (specificity/category fit/merchant fit/trigger rele
 - [ ] Per-turn language switch detection using latest inbound reply as primary signal (requirement; implemented via Phase G LLM detector with deterministic fallback).
 - [ ] Language consistency validator in output gate (reject/repair mismatch).
 - [ ] More category-specific compulsion strategies (social proof / reciprocity / curiosity families).
-- [ ] Implement specialized composers to eliminate internal jargon ("dormant with vera", "gbp unverified") and use natural merchant-facing labels.
-- [ ] Implement trigger-kind deep composers for high-value kinds currently on generic fallback:
-  - [ ] `ipl_match_today`
-  - [ ] `review_theme_emerged` (fix sentiment hallucination - don't call negative reviews positive)
-  - [ ] `milestone_reached` (inject exact metric/value)
-  - [ ] `category_seasonal` (unpack payload trends)
-  - [ ] `gbp_unverified` (explain value uplift)
-  - [ ] `competitor_opened` (include their offer price)
-  - [ ] `dormant_with_vera` (natural re-engagement)
-  - [ ] `winback_eligible`
-  - [ ] `renewal_due`
-- [ ] Upgrade research/compliance compositions with payload-grounded specifics:
+- [x] Implement specialized composers to eliminate internal jargon ("dormant with vera", "gbp unverified") and use natural merchant-facing labels.
+- [x] Implement trigger-kind deep composers for high-value kinds currently on generic fallback:
+  - [x] `ipl_match_today`
+  - [x] `review_theme_emerged` (fix sentiment hallucination - don't call negative reviews positive)
+  - [x] `milestone_reached` (inject exact metric/value)
+  - [x] `category_seasonal` (unpack payload trends)
+  - [x] `gbp_unverified` (explain value uplift)
+  - [x] `competitor_opened` (include their offer price)
+  - [x] `dormant_with_vera` (natural re-engagement)
+  - [x] `winback_eligible`
+  - [x] `renewal_due`
+- [x] Upgrade research/compliance compositions with payload-grounded specifics:
   - `supply_alert`: include batch IDs/manufacturer/impacted cohort/replacement workflow when present.
   - `regulation_change`: include effective date + exact compliance delta when present.
 - [ ] Improve customer-scope copy quality:
