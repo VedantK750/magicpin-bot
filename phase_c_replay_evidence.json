@@ -1,0 +1,50 @@
+{
+  "auto_reply_hell": {
+    "turn2": {
+      "action": "send",
+      "body": "Looks like an auto-reply. When the owner is available, reply YES and I will continue from here.",
+      "cta": "binary_yes_no",
+      "rationale": "Detected canned auto-reply; policy selected one owner-directed nudge on first occurrence."
+    },
+    "turn3": {
+      "action": "wait",
+      "wait_seconds": 14400,
+      "rationale": "Repeated auto-reply; backing off before retry."
+    },
+    "turn4": {
+      "action": "end",
+      "rationale": "Auto-reply repeated 3 times with no engagement; ending conversation."
+    }
+  },
+  "intent_transition": {
+    "tick_action": {
+      "conversation_id": "conv_m_001_trg_replay_intent_0001",
+      "merchant_id": "m_001",
+      "customer_id": null,
+      "send_as": "vera",
+      "trigger_id": "trg_replay_intent",
+      "template_name": "vera_research_digest_v1",
+      "template_params": [
+        "Meera",
+        "Meera, quick update: Fluoride 3-month recall lowers recurrence. Want me to draft a 2-line message you can send today? — JIDA Oct 2026, p.14",
+        "research digest"
+      ],
+      "body": "Meera, quick update: Fluoride 3-month recall lowers recurrence. Want me to draft a 2-line message you can send today? — JIDA Oct 2026, p.14",
+      "cta": "open_ended",
+      "suppression_key": "sup:replay:intent",
+      "rationale": "research_digest trigger mapped to category digest item with source-grounded specificity."
+    },
+    "turn2": {
+      "action": "send",
+      "body": "Great. Moving to action now: I can draft the exact next message and checklist in one go. Reply CONFIRM to proceed.",
+      "cta": "binary_confirm_cancel",
+      "rationale": "Detected explicit commitment; switched from qualification to action mode."
+    }
+  },
+  "hostile": {
+    "turn2": {
+      "action": "end",
+      "rationale": "Detected explicit opt-out/not-interested signal; closing immediately."
+    }
+  }
+}
