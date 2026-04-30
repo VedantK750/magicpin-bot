@@ -491,19 +491,20 @@ Goal: maximize rubric scores (specificity/category fit/merchant fit/trigger rele
 - [x] Rationale generation.
 - [x] Basic language preference handling (`customer.language_pref` and merchant language fallback).
 - [ ] Full category voice/taboo enforcement from `category.voice`.
-- [ ] Per-turn language switch detection using latest inbound reply as primary signal.
+- [ ] Per-turn language switch detection using latest inbound reply as primary signal (requirement; implemented via Phase G LLM detector with deterministic fallback).
 - [ ] Language consistency validator in output gate (reject/repair mismatch).
 - [ ] More category-specific compulsion strategies (social proof / reciprocity / curiosity families).
-- [ ] Trigger-kind-specific prompt/rule variants for all major kinds used in test pairs.
-- [ ] Implement deep trigger composers for high-value kinds currently on generic fallback:
-  - `ipl_match_today`
-  - `review_theme_emerged`
-  - `milestone_reached`
-  - `category_seasonal`
-  - `gbp_unverified`
-  - `competitor_opened`
-  - `dormant_with_vera`
-  - `winback_eligible`
+- [ ] Implement specialized composers to eliminate internal jargon ("dormant with vera", "gbp unverified") and use natural merchant-facing labels.
+- [ ] Implement trigger-kind deep composers for high-value kinds currently on generic fallback:
+  - [ ] `ipl_match_today`
+  - [ ] `review_theme_emerged` (fix sentiment hallucination - don't call negative reviews positive)
+  - [ ] `milestone_reached` (inject exact metric/value)
+  - [ ] `category_seasonal` (unpack payload trends)
+  - [ ] `gbp_unverified` (explain value uplift)
+  - [ ] `competitor_opened` (include their offer price)
+  - [ ] `dormant_with_vera` (natural re-engagement)
+  - [ ] `winback_eligible`
+  - [ ] `renewal_due`
 - [ ] Upgrade research/compliance compositions with payload-grounded specifics:
   - `supply_alert`: include batch IDs/manufacturer/impacted cohort/replacement workflow when present.
   - `regulation_change`: include effective date + exact compliance delta when present.
@@ -511,7 +512,7 @@ Goal: maximize rubric scores (specificity/category fit/merchant fit/trigger rele
   - natural-language rendering for machine-style tokens (e.g., `6_month_cleaning`),
   - higher-fidelity relationship-state personalization (lapse duration/goals/visit context),
   - preserve language preference naturally (no awkward forced inserts).
-- [ ] Add grammar/style repair pass for composed body before output validation.
+- [ ] Add grammar/style repair pass for composed body (e.g., "calls is" -> "calls are").
 
 Phase D exit criteria:
 - [ ] Message quality no longer mostly fallback-style for placeholder payloads; improved specificity without hallucination.
@@ -523,13 +524,18 @@ Goal: avoid penalties and operational failures.
 - [x] Anti-repetition checks.
 - [x] Basic schema presence checks for actions.
 - [x] Teardown state wipe endpoint.
-- [ ] Strict provenance allowlist check for numbers/dates/sources/entities (planned in Section 13, not fully coded).
 - [ ] Add explicit timeout guardrails for `/v1/tick` and `/v1/reply` compute path.
 - [ ] Add structured request logging for failure diagnosis.
 - [ ] Add resilience for malformed incoming payload fields (defensive normalization path).
 - [ ] Enforce privacy rule: no outbound non-LLM external API calls carrying merchant/customer data (document + code guard).
 - [ ] Add health degradation alerts/counters for repeated failures.
 - [ ] Enforce strict provenance allowlist as hard gate in validation pipeline (numbers/dates/sources/entities/price mentions must be context-traceable).
+- [ ] Add explicit validator gate order for every outbound candidate:
+  - schema check,
+  - provenance/no-hallucination check (numeric/date literals must exist in context),
+  - taboo/tone safety check,
+  - URL/repetition checks,
+  - fail closed if any gate fails.
 
 Phase E exit criteria:
 - [ ] Stable handling for malformed inputs and no obvious penalty-triggering failures in dry runs.
@@ -557,22 +563,28 @@ Goal: produce challenge deliverables.
 Phase F exit criteria:
 - [ ] Artifact bundle ready: `bot.py`, `submission.jsonl`, `README.md` (+ optional handlers).
 
-### Phase G — LLM Integration 
+### Phase G — LLM Integration (Hybrid Architecture)
 Goal: improve composition quality while preserving deterministic/safe behavior.
 
+- [ ] Adopt strict hybrid runtime contract:
+  - **Rule-First Policy:** Rules exclusively decide the action (`send|wait|end`, opt-out, hostility, auto-reply, stop conditions).
+  - **LLM-First Drafting:** LLM is used *only* for content drafting (body/CTA phrasing, specificity) on `send` turns.
+  - **Rule-First Safety:** Validator checks act as a hard gate before any LLM output is sent (schema, provenance, taboo, URL, repetition).
+  - **Rule-First Fallback:** Safe fallback to rule-based composer templates if the LLM errors, times out, or fails the validator.
 - [ ] Decide provider abstraction (`OpenAI/Anthropic/Gemini/DeepSeek/...`) behind a pluggable interface.
 - [ ] Add provider config via env vars (`LLM_PROVIDER`, `LLM_API_KEY`, `LLM_MODEL`, timeout).
+- [ ] Implement LLM drafting path for `send` content with structured output contract (`body`, `cta`, `rationale`) and strict timeout budget.
 - [ ] Implement prompt templates for major trigger families.
+- [ ] Implement per-turn language switch detector from latest inbound text (LLM primary), with deterministic fallback to profile language when LLM is unavailable/low-confidence.
 - [ ] Add strict post-generation validator + repair loop (1 retry max).
-- [ ] Keep deterministic mode toggle (`RULE_BASED_ONLY=true`) for fallback/reliability.
+- [ ] Keep deterministic mode toggle (`RULE_BASED_ONLY=true`) for fallback/reliability testing.
 - [ ] Force low temperature and stable prompt structure.
 - [ ] Add response budget controls (token/time caps).
-- [ ] Add safe fallback to rule-based composer when provider fails or times out.
 - [ ] Add redact/no-leak policy in prompt assembly for non-required fields.
 - [ ] Add A/B switch by trigger kind for experimentation.
 
 Phase G exit criteria:
-- [ ] LLM path demonstrably improves quality on simulator scoring without violating safety/latency constraints.
+- [ ] LLM path demonstrably improves quality on simulator scoring without violating safety/latency/replay constraints.
 
 ---
 
@@ -624,8 +636,8 @@ This checklist is a direct cross-check against challenge documentation to preven
 ## 12. Determinism and Latency Strategy
 
 Determinism:
-- Prefer rule-based generation path first.
-- If LLM path is used, force low temperature and stable prompt layout.
+- Prefer rule-based policy decisions first (`send|wait|end` and safety branches).
+- If LLM path is used for `send` drafting, force low temperature and stable prompt layout.
 - Seeded tie-breakers for trigger ordering.
 
 Latency:
@@ -653,7 +665,7 @@ For each candidate outbound:
 12. For placeholder trigger payloads, body contains no fabricated payload-specific specifics.
 
 If validation fails:
-- Attempt single regeneration using constrained fallback template.
+- Attempt single constrained regeneration (LLM repair when LLM mode is enabled; otherwise deterministic template fallback).
 - If still failing, skip action rather than returning malformed output.
 
 Provenance check implementation note:
@@ -820,8 +832,8 @@ Average strict quality score: **28.2/50** (operationally safe, quality still bel
   - include relationship-state facts (last visit/lapse duration/goals) when available.
 - [ ] Add provenance validator for all number/date/source/entity mentions (hard gate pre-send).
 - [ ] Add grammar/style repair pass for templated outputs (example: "your calls is down" -> "are down").
-- [ ] Add conversation-aware artifact generation in reply mode:
+- [x] Add conversation-aware artifact generation in reply mode:
   - if inbound asks "send abstract + draft", return those artifacts in-body immediately.
 - [ ] Strengthen compulsion levers by category (loss aversion, reciprocity, social proof, low-friction next step) rather than one generic CTA pattern.
-- [ ] Add per-turn language adaptation based on latest inbound message signal (not just static profile fallback).
+- [ ] Add per-turn language adaptation based on latest inbound message signal using LLM detection with deterministic fallback.
 - [ ] Add quality regression harness over all 25 seed triggers with per-dimension scoring and thresholds.
