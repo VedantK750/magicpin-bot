@@ -10,6 +10,8 @@ from typing import Any, Literal, Optional, Union
 from fastapi import FastAPI, Response
 from pydantic import BaseModel, Field
 
+import llm_composer
+
 
 app = FastAPI(title="magicpin-challenge-bot", version="0.1.0")
 START_TS = time.time()
@@ -945,6 +947,20 @@ def compose(
     pref = language_pref(customer, merchant)
     if "hi" in pref and "reply" in body.lower():
         body = body.replace("Reply", "Reply / jawab")
+
+    # --- Phase G: Hybrid LLM Drafting ---
+    if os.getenv("RULE_BASED_ONLY") != "true" and send_as in {"vera", "merchant_on_behalf"}:
+        # We only use LLM for drafting the 'send' body content.
+        # Decisions and safety remain rule-first.
+        llm_body, llm_rationale = llm_composer.draft_message(
+            category=category,
+            merchant=merchant,
+            trigger=trigger,
+            rule_body=body,
+            language_pref=pref
+        )
+        body = llm_body
+        rationale += f" | {llm_rationale}"
 
     safe = safe_body_or_none(body)
     if not safe:
