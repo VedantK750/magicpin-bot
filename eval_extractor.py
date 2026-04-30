@@ -42,6 +42,8 @@ def run_extraction():
         client.push_context("category", slug, 1, cat)
     for mid, m in dataset.merchants.items():
         client.push_context("merchant", mid, 1, m)
+    for cid, c in dataset.customers.items():
+        client.push_context("customer", cid, 1, c)
     for tid, t in dataset.triggers.items():
         client.push_context("trigger", tid, 1, t)
 
