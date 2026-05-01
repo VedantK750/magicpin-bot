@@ -57,16 +57,26 @@ class Validator:
         # 3. Numeric Provenance (Hard Gate)
         # Every number in the LLM output MUST exist in the rule-based output, category expertise, OR hidden facts
         llm_nums = Validator.extract_numbers(llm_body)
-        rule_nums = (
-            Validator.extract_numbers(rule_body) | 
-            Validator.extract_numbers(category_context) |
-            Validator.extract_numbers(hidden_facts)
-        )
         
-        for num in llm_nums:
-            # Allow common small numbers or years like 2026
-            if num not in rule_nums and float(num) > 5 and num != "2026":
-                return False, f"Hallucinated number detected: {num}"
+        # Convert all available facts to a set of floats for loose but safe matching
+        fact_texts = [rule_body, category_context, hidden_facts]
+        allowed_floats = set()
+        for text in fact_texts:
+            for n in Validator.extract_numbers(text):
+                try:
+                    allowed_floats.add(float(n))
+                except ValueError:
+                    continue
+        
+        for num_str in llm_nums:
+            try:
+                num_val = float(num_str)
+                # Allow common small numbers, years like 2026, or any number explicitly in facts
+                if num_val <= 5 or num_val == 2026 or num_val in allowed_floats:
+                    continue
+                return False, f"Hallucinated number detected: {num_str}"
+            except ValueError:
+                continue
 
         return True, "Valid"
 
