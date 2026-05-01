@@ -72,7 +72,8 @@ def draft_message(
     merchant: Dict[str, Any],
     trigger: Dict[str, Any],
     rule_body: str,
-    language_pref: str = "en"
+    language_pref: str = "en",
+    scope: str = "merchant"
 ) -> Tuple[str, str]:
     provider = DeepSeekProvider(LLM_API_KEY, LLM_MODEL)
     
@@ -83,36 +84,69 @@ def draft_message(
     tone = voice.get("tone", "professional and helpful")
     taboos = voice.get("vocab_taboo", [])
     
-    system_prompt = f"""You are Vera, an expert AI merchant assistant for magicpin.
-Your goal is to rewrite a factual message into a highly engaging, category-specific message.
+    # Extract mixing language if present (e.g., 'te' from 'te-en mix')
+    mix_lang = "Hindi" # Default fallback
+    if "-en" in language_pref:
+        lang_code = language_pref.split("-")[0]
+        # Common map for better prompting
+        lang_map = {"hi": "Hindi", "te": "Telugu", "ta": "Tamil", "kn": "Kannada", "mr": "Marathi", "bn": "Bengali", "gu": "Gujarati", "pa": "Punjabi", "ml": "Malayalam"}
+        mix_lang = lang_map.get(lang_code, lang_code.upper())
+
+    if scope == "customer":
+        system_prompt = f"""You are the AI representative of '{biz_name}', a {cat_name}.
+Your goal is to rewrite a factual reminder/offer into a warm, helpful, and professional message for a customer.
+
+CONTEXT:
+- Tone: {tone}
+- Language Preference: {language_pref} (If code-mixing requested, use a natural mix of {mix_lang} and English)
+
+STRICT RULES:
+1. Speak as the business ('We', 'Our', or '{biz_name}'). Do NOT mention 'Vera' or 'magicpin'.
+2. Use ONLY the facts provided in the factual message. Do NOT invent prices or dates.
+3. Keep it concise.
+4. Do NOT include any URLs.
+5. Avoid these taboo words: {', '.join(taboos)}
+6. If code-mixing, mix {mix_lang} and English naturally (use Roman script for {mix_lang}).
+7. ANTI-HALLUCINATION: Do NOT claim the customer has a status (like 'loyal' or 'due') unless it is explicitly mentioned in the factual message.
+"""
+    else:
+        system_prompt = f"""You are Vera, an expert AI merchant assistant for magicpin.
+Your goal is to rewrite a factual update into an engaging, coaching-style message for the business owner, {owner}.
 
 CONTEXT:
 - Category: {cat_name}
 - Tone: {tone}
-- Merchant: {biz_name} (Owner: {owner})
-- Language Preference: {language_pref} (If 'hi-en', use a natural mix of Hindi and English)
+- Merchant: {biz_name}
+- Language Preference: {language_pref} (If code-mixing requested, use a professional mix of {mix_lang} and English)
 
 STRICT RULES:
-1. DO NOT invent any new facts, numbers, dates, or prices. 
-2. Use ONLY the facts provided in the factual message.
-3. Keep it concise (under 160 characters if possible).
-4. Do NOT include any URLs.
-5. Avoid these taboo words: {', '.join(taboos)}
-6. If the language is 'hi-en', use Roman Hindi (Hinglish) naturally.
+1. Speak as Vera (the assistant).
+2. Use ONLY the facts provided in the factual message. 
+3. DO NOT invent any new numbers, percentages, or data.
+4. DO NOT make claims about the merchant's business status (e.g., "you are compliant", "you are state-of-the-art") unless the factual message says so.
+5. If the factual message is an invitation or alert, stay in that mode.
+6. Do NOT include any URLs.
+7. Avoid these taboo words: {', '.join(taboos)}
+8. If code-mixing, use Roman script for {mix_lang}.
 """
 
     user_prompt = f"""FACTUAL MESSAGE:
 "{rule_body}"
 
-Rewrite this message to be more engaging and personalized while strictly following the rules above."""
+Rewrite this message to be more engaging while strictly following the rules above. 
+OUTPUT ONLY THE MESSAGE BODY. NO INTRO, NO OUTRO, NO QUOTES."""
 
     try:
         start_time = time.time()
         llm_output = provider.complete(user_prompt, system=system_prompt)
         latency = time.time() - start_time
         
-        # Remove quotes if the LLM wrapped the message
-        llm_output = llm_output.strip('"').strip("'")
+        # Aggressive cleanup of LLM filler
+        llm_output = llm_output.strip('"').strip("'").strip()
+        if "---" in llm_output:
+            llm_output = llm_output.split("---")[-1].strip()
+        if ":" in llm_output[:30] and ("rewrite" in llm_output[:50].lower() or "message" in llm_output[:50].lower()):
+            llm_output = llm_output.split(":", 1)[1].strip()
         
         is_valid, reason = Validator.validate(llm_output, rule_body, taboos)
         

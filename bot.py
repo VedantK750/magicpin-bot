@@ -91,7 +91,10 @@ def merchant_name(merchant: dict[str, Any]) -> str:
 
 
 def owner_name(merchant: dict[str, Any]) -> str:
-    return merchant.get("identity", {}).get("owner_first_name") or merchant_name(merchant)
+    name = merchant.get("identity", {}).get("owner_first_name") or merchant_name(merchant)
+    if merchant.get("category_slug") == "dentists" and not name.startswith("Dr."):
+        return f"Dr. {name}"
+    return name
 
 
 def language_pref(customer: Optional[dict[str, Any]], merchant: dict[str, Any]) -> str:
@@ -99,9 +102,17 @@ def language_pref(customer: Optional[dict[str, Any]], merchant: dict[str, Any]) 
         lp = customer.get("identity", {}).get("language_pref")
         if isinstance(lp, str) and lp:
             return lp.lower()
+    
     langs = merchant.get("identity", {}).get("languages", [])
-    if "hi" in langs:
+    # Prioritize non-English, non-Hindi languages first for better regional fit
+    other_langs = [l.lower() for l in langs if l.lower() not in {"en", "hi"}]
+    if other_langs:
+        return f"{other_langs[0]}-en mix"
+    
+    # Fallback to Hindi if present
+    if "hi" in [l.lower() for l in langs]:
         return "hi-en mix"
+        
     return "english"
 
 
@@ -528,11 +539,11 @@ def _compose_research_like(category: dict[str, Any], merchant: dict[str, Any], t
 
     if item:
         title = item.get("title", "new update")
-        source = item.get("source", "")
-        source_part = f" — {source}" if non_empty_str(source) else ""
+        source = item.get("source", "latest industry report")
+        source_part = f" (Source: {source})"
         body = (
-            f"{owner}, quick update for {biz}{loc_str}: {title}. "
-            f"Want me to draft a 2-line message you can send today?{source_part}"
+            f"{owner}, quick update for {biz}{loc_str}: {title}. {source_part} "
+            "Want me to draft a 2-line message you can send today to your customers?"
         )
         rationale = f"{kind} trigger mapped to category digest item with source-grounded specificity."
         return body, rationale
@@ -550,19 +561,24 @@ def _compose_perf_like(merchant: dict[str, Any], trigger: dict[str, Any]) -> tup
     payload = trigger.get("payload", {}) or {}
     owner = owner_name(merchant)
     biz = merchant_name(merchant)
-    metric = payload.get("metric")
+    metric = payload.get("metric", "engagement")
     delta_pct = payload.get("delta_pct")
+    
+    perf = merchant.get("performance", {}) or {}
+    window = payload.get("window", perf.get("window_days", 7))
+    current_val = perf.get(metric, "")
+    
+    val_str = f" (currently at {current_val})" if current_val else ""
 
     if non_empty_str(metric) and isinstance(delta_pct, (int, float)):
         direction = "up" if delta_pct > 0 else "down"
         body = (
-            f"{owner}, quick signal for {biz}: your {metric} are {direction} {pct(abs(float(delta_pct)))} on this cycle. "
+            f"{owner}, quick signal for {biz}: your {metric} are {direction} {pct(abs(float(delta_pct)))} over the last {window}{val_str}. "
             "Want me to draft a focused next-step plan for today?"
         )
-        rationale = "Used explicit metric and delta from trigger payload."
+        rationale = f"Used explicit metric {metric}, delta {delta_pct}, and window {window} from payload."
         return body, rationale
 
-    perf = merchant.get("performance", {}) or {}
     ctr = perf.get("ctr")
     views = perf.get("views")
     calls = perf.get("calls")
@@ -576,10 +592,10 @@ def _compose_perf_like(merchant: dict[str, Any], trigger: dict[str, Any]) -> tup
     fact_str = ", ".join(facts) if facts else "current performance state"
 
     body = (
-        f"{owner}, I can see a {human_kind(kind)} signal for {biz} ({fact_str}). "
+        f"{owner}, I can see a {human_kind(kind)} signal for {biz} ({fact_str} in the last {window} days). "
         "Want me to suggest one practical action for this week?"
     )
-    rationale = "No exact trigger delta available; used merchant performance facts without invented percentages."
+    rationale = "No exact trigger delta available; used merchant performance facts and window context."
     return body, rationale
 
 
@@ -592,9 +608,14 @@ def _compose_customer_recall(
     m_name = merchant_name(merchant)
     c_name = customer.get("identity", {}).get("name") or "there"
     offer = find_active_offer(merchant)
-    service_due = payload.get("service_due")
+    service_due = payload.get("service_due") or payload.get("topic", "follow-up visit")
     due_date = payload.get("due_date")
     slots = payload.get("available_slots", []) or []
+    
+    # Extract goal/topic from customer relationship for deeper personalization
+    rel = customer.get("relationship", {})
+    topic_pref = rel.get("topic_preference") or rel.get("goal", "")
+    topic_str = f" for {topic_pref}" if topic_pref else ""
 
     slot_labels = []
     for slot in slots[:2]:
@@ -605,22 +626,22 @@ def _compose_customer_recall(
     slot_text = ""
     cta = "open_ended"
     if len(slot_labels) >= 2:
-        slot_text = f"Slots available: {slot_labels[0]} or {slot_labels[1]}."
+        slot_text = f"We have slots available: {slot_labels[0]} or {slot_labels[1]}."
         cta = "multi_choice_slot"
     elif len(slot_labels) == 1:
-        slot_text = f"Slot available: {slot_labels[0]}."
+        slot_text = f"We have a slot available: {slot_labels[0]}."
         cta = "multi_choice_slot"
     else:
-        slot_text = "Tell us your preferred time and we will confirm."
+        slot_text = "Tell us your preferred time and we will confirm it for you."
 
-    due_text = f"Your {service_due.replace('_', ' ')} is due." if non_empty_str(service_due) else "Your follow-up is due."
+    due_text = f"It's time for your {service_due.replace('_', ' ')}{topic_str}."
     if non_empty_str(due_date):
-        due_text += f" Due date: {due_date}."
+        due_text += f" (Due date: {due_date})"
 
-    offer_text = f" {offer} is currently active." if offer else ""
+    offer_text = f" Also, our {offer} is currently active." if offer else ""
 
-    body = f"Hi {c_name}, {m_name} here. {due_text} {slot_text}{offer_text} Reply with your preferred option."
-    rationale = "Customer-scoped follow-up using trigger due data + available slots + merchant active offer when present."
+    body = f"Hi {c_name}, {m_name} here. {due_text} {slot_text}{offer_text} Reply with your preferred option and we'll handle the rest!"
+    rationale = f"Customer follow-up for {service_due} anchored on relationship context ({topic_pref})."
     return body, rationale + f" CTA={cta}."
 
 
@@ -658,12 +679,15 @@ def _compose_milestone(merchant: dict[str, Any], trigger: dict[str, Any]) -> tup
     metric_map = {"review_count": "Google reviews", "views": "profile views", "calls": "customer calls"}
     metric_label = metric_map.get(metric, str(metric).replace("_", " "))
     
-    fact_str = f" - {biz} just reached {value} {metric_label}!" if value and metric_label else "!"
+    perf = merchant.get("performance", {}) or {}
+    total_views = perf.get("views", 0)
+    
+    fact_str = f" - {biz} just reached {value} {metric_label}! (Total {total_views} views YTD)" if value and metric_label else "!"
     body = (
         f"Congratulations {owner}! You're just {int(milestone_val) - int(value) if value and milestone_val else 'a few'} steps away from the {milestone_val} {metric_label} milestone{fact_str} "
         "This social proof is great for attracting new customers. Want me to draft a 'Thank You' post?"
     )
-    rationale = f"Personalized {kind} with specific milestone values and merchant-facing labels."
+    rationale = f"Personalized {kind} with milestone + performance context."
     return body, rationale
 
 
@@ -671,24 +695,28 @@ def _compose_review_theme(merchant: dict[str, Any], trigger: dict[str, Any]) -> 
     kind = trigger.get("kind", "")
     payload = trigger.get("payload", {}) or {}
     owner = owner_name(merchant)
+    biz = merchant_name(merchant)
     
     theme = payload.get("theme", "recent reviews")
     sentiment = str(payload.get("sentiment", "negative" if "late" in theme or "bad" in theme or "slow" in theme else "positive")).lower()
     count = payload.get("occurrences_30d", payload.get("review_count", ""))
     quote = payload.get("common_quote")
     
+    perf = merchant.get("performance", {}) or {}
+    rating = merchant.get("performance", {}).get("avg_rating", "4.0+")
+    
     count_str = f" across {count} recent reviews" if count else ""
     quote_str = f' (e.g., "{quote}")' if quote else ""
     
     if sentiment == "positive":
         body = (
-            f"{owner}, I noticed a positive theme{count_str} regarding '{theme}'{quote_str}. "
-            "Want me to draft a reply that highlights this strength to new customers?"
+            f"{owner}, I noticed a positive theme{count_str} regarding '{theme}'{quote_str} for {biz}. "
+            f"Your rating is strong at {rating}. Want me to draft a reply that highlights this strength to new customers?"
         )
-        rationale = f"Anchored on positive review theme '{theme}'."
+        rationale = f"Anchored on positive review theme '{theme}' + merchant rating."
     else:
         body = (
-            f"{owner}, a few reviews{count_str} mentioned '{theme}'{quote_str}. "
+            f"{owner}, a few reviews{count_str} mentioned '{theme}'{quote_str} for {biz}. "
             "Want me to draft a professional response to address this and keep your rating high?"
         )
         rationale = f"Anchored on negative review theme '{theme}' with professional recovery framing."
@@ -718,14 +746,21 @@ def _compose_curious_ask(category: dict[str, Any], merchant: dict[str, Any], tri
     kind = trigger.get("kind", "")
     owner = owner_name(merchant)
     biz = merchant_name(merchant)
-    
+
+    perf = merchant.get("performance", {}) or {}
+    views = perf.get("views", 0)
+    calls = perf.get("calls", 0)
+
+    context_str = ""
+    if views > 0 or calls > 0:
+        context_str = f" With {views} views and {calls} calls recently, I want to keep your momentum high."
+
     body = (
-        f"Hi {owner}! Quick check — what service or product has been most asked-for this week at {biz}? "
+        f"Hi {owner}! Quick check — what service or product has been most asked-for this week at {biz}?{context_str} "
         "I'll turn your answer into a Google post + a 4-line WhatsApp reply you can use for customer queries. Takes 2 min."
     )
-    rationale = f"Handled {kind} with a curiosity-driven reciprocity hook (effort externalization)."
+    rationale = f"Handled {kind} with performance anchoring ({views} views) and a curiosity-driven reciprocity hook."
     return body, rationale
-
 
 def _compose_ipl(category: dict[str, Any], merchant: dict[str, Any], trigger: dict[str, Any]) -> tuple[str, str]:
     kind = trigger.get("kind", "")
@@ -767,43 +802,58 @@ def _compose_competitor(category: dict[str, Any], merchant: dict[str, Any], trig
 
 def _compose_gbp_unverified(merchant: dict[str, Any], trigger: dict[str, Any]) -> tuple[str, str]:
     owner = owner_name(merchant)
+    biz = merchant_name(merchant)
     payload = trigger.get("payload", {}) or {}
     uplift = payload.get("estimated_uplift_pct")
     uplift_str = f" It could boost your visibility by {pct(uplift)}!" if uplift else ""
     
+    perf = merchant.get("performance", {}) or {}
+    calls = perf.get("calls", 0)
+    
     body = (
-        f"{owner}, I noticed your Google Business Profile isn't fully verified yet.{uplift_str} "
-        "Verified profiles get more calls and directions. Want me to guide you through the 2-minute setup?"
+        f"{owner}, I noticed your Google Business Profile for {biz} isn't fully verified yet.{uplift_str} "
+        f"With {calls} calls last month, verification could significantly increase your reach. "
+        "Want me to guide you through the 2-minute setup?"
     )
-    rationale = "Removed 'gbp unverified' jargon; used natural value-proposition framing."
+    rationale = "Verification hook with estimated uplift + current calls context."
     return body, rationale
 
 
 def _compose_dormant(merchant: dict[str, Any], trigger: dict[str, Any]) -> tuple[str, str]:
     owner = owner_name(merchant)
+    biz = merchant_name(merchant)
     payload = trigger.get("payload", {}) or {}
     days = payload.get("days_since_last_merchant_message")
-    days_str = f"It's been {days} days since we last updated your profile." if days else "It's been a while since our last profile update."
+    
+    perf = merchant.get("performance", {}) or {}
+    views = perf.get("views", 0)
+    
+    days_str = f"It's been {days} days since we last updated your profile for {biz}." if days else f"It's been a while since our last update for {biz}."
     
     body = (
-        f"Hi {owner}, {days_str} Your listing is still getting views, but fresh content could help convert them. "
+        f"Hi {owner}, {days_str} Your listing is still getting {views} views, but fresh content could help convert them. "
         "Want me to suggest a quick update for this week?"
     )
-    rationale = "Removed 'dormant' jargon; used re-engagement framing."
+    rationale = "Dormancy re-engagement with specific view count context."
     return body, rationale
 
 
 def _compose_winback(merchant: dict[str, Any], trigger: dict[str, Any]) -> tuple[str, str]:
     owner = owner_name(merchant)
+    biz = merchant_name(merchant)
     payload = trigger.get("payload", {}) or {}
     lapsed = payload.get("lapsed_customers_added_since_expiry")
     lapsed_str = f" {lapsed} of your regulars haven't visited in a while." if lapsed else ""
     
+    perf = merchant.get("performance", {}) or {}
+    ctr = perf.get("ctr", 0)
+    
     body = (
-        f"{owner}, it might be a good time to restart your growth plan.{lapsed_str} "
+        f"{owner}, it might be a good time to restart your growth plan for {biz}.{lapsed_str} "
+        f"With your current CTR at {pct(ctr)}, we have a great baseline to improve. "
         "Want me to draft a 'welcome back' offer to re-engage them today?"
     )
-    rationale = "Winback composer focusing on lapsed customer opportunity."
+    rationale = "Winback composer focusing on lapsed customer opportunity + performance baseline."
     return body, rationale
 
 
@@ -957,7 +1007,8 @@ def compose(
             merchant=merchant,
             trigger=trigger,
             rule_body=body,
-            language_pref=pref
+            language_pref=pref,
+            scope=scope
         )
         body = llm_body
         rationale += f" | {llm_rationale}"
