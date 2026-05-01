@@ -395,6 +395,7 @@ class ConversationState:
     last_hostility_kind: str = "none"
     ended: bool = False
     message_hashes: set[str] = field(default_factory=set)
+    history: list[dict[str, str]] = field(default_factory=list) # [{'role': 'vera'|'user', 'msg': str}]
 
 
 @dataclass
@@ -569,7 +570,8 @@ def _compose_perf_like(merchant: dict[str, Any], trigger: dict[str, Any]) -> tup
 
     body = (
         f"{owner}, quick signal for {biz}: your {metric} are {'up' if delta_pct > 0 else 'down'} {pct(abs(float(delta_pct)))} over the last {window} days. "
-        f"(Exact current value: {current_val}). (Source: magicpin performance analytics)"
+        f"(Exact current value: {current_val}). (Source: magicpin performance analytics). "
+        "Want me to analyze the source of this shift and suggest a recovery plan?"
     )
     rationale = f"Performance signal: {metric} {delta_pct} over {window}."
     return body, rationale
@@ -730,7 +732,7 @@ def _compose_festival(category: dict[str, Any], merchant: dict[str, Any], trigge
     date_str = f" on {date}" if date else ""
     body = (
         f"Hi {owner}, {festival} is coming up{date_str} for {biz}.{offer_str} It's a great time to engage your regulars with a festive offer. "
-        "Want me to draft a greetings post + a special discount story for you?"
+        "Want me to draft a greetings post + a 10% 'Festive Flash' offer for your regulars?"
     )
     rationale = f"Handled {kind} by anchoring on '{festival}' and active offer."
     return body, rationale
@@ -750,7 +752,7 @@ def _compose_curious_ask(category: dict[str, Any], merchant: dict[str, Any], tri
 
     body = (
         f"Hi {owner}! Quick check — what service or product has been most asked-for this week at {biz}?{context_str} "
-        "I'll turn your answer into a Google post + a 4-line WhatsApp reply you can use for customer queries. Takes 2 min."
+        "Tell me one item and I'll turn it into a Google post for you."
     )
     rationale = f"Handled {kind} with performance anchoring ({views} views) and a curiosity-driven reciprocity hook."
     return body, rationale
@@ -1217,6 +1219,7 @@ async def tick(body: TickBody):
             continue
 
         conv.message_hashes.add(text_hash(action["body"]))
+        conv.history.append({"role": "vera", "msg": action["body"]})
         conversations[conv_id] = conv
         suppression_sent[s_key] = utc_now_iso()
         ns.sent_count += 1
@@ -1224,6 +1227,26 @@ async def tick(body: TickBody):
         actions.append(action)
 
     return {"actions": actions}
+
+
+def detect_message_language(msg: str) -> Optional[str]:
+    """Detects if a message is primarily in a specific Indic language based on script or common keywords."""
+    m = msg.lower()
+    # Script-based detection (simple regex for common Indic ranges)
+    if re.search(r"[\u0900-\u097F]", msg): return "hi-en mix" # Devanagari (Hindi/Marathi)
+    if re.search(r"[\u0B80-\u0BFF]", msg): return "ta-en mix" # Tamil
+    if re.search(r"[\u0C00-\u0C7F]", msg): return "te-en mix" # Telugu
+    if re.search(r"[\u0C80-\u0CFF]", msg): return "kn-en mix" # Kannada
+    if re.search(r"[\u0980-\u09FF]", msg): return "bn-en mix" # Bengali
+    if re.search(r"[\u0A00-\u0A7F]", msg): return "pa-en mix" # Punjabi
+    if re.search(r"[\u0A80-\u0AFF]", msg): return "gu-en mix" # Gujarati
+    if re.search(r"[\u0D00-\u0D7F]", msg): return "ml-en mix" # Malayalam
+    
+    # Romanized keyword detection for high-frequency switch signals
+    hindi_roman = ["karo", "hai", "nahi", "kya", "aap", "bol", "raha", "karun", "bhejo", "mat"]
+    if any(f" {w} " in f" {m} " for w in hindi_roman): return "hi-en mix"
+    
+    return None
 
 
 @app.post("/v1/reply", response_model=Union[ReplySendResponse, ReplyWaitResponse, ReplyEndResponse])
@@ -1246,6 +1269,10 @@ async def reply(body: ReplyBody):
     if conv.ended:
         return {"action": "end", "rationale": "Conversation already closed."}
 
+    # Store user message in history
+    conv.history.append({"role": "user", "msg": msg})
+
+    # --- Rule-Based Policy Decisions ---
     signal = detect_hostility_signal(msg)
     if signal.kind == "hard_stop":
         _close_conversation(conv)
@@ -1257,86 +1284,103 @@ async def reply(body: ReplyBody):
         _close_conversation(conv)
         return {"action": "end", "rationale": "Detected high-confidence hostile signal; closing gracefully to avoid escalation."}
 
+    policy_intent = "QUALIFICATION"
+    out_body = ""
+    out_cta = "open_ended"
+    out_rationale = ""
+
     if signal.kind == "medium_frustration":
         conv.hostility_score += 1
         conv.last_hostility_kind = signal.kind
         if conv.hostility_score >= 2:
             _close_conversation(conv)
             return {"action": "end", "rationale": "Repeated frustration signals detected; ending conversation respectfully."}
-        out = "Sorry for the disturbance. I’ll keep this brief. If you prefer no further messages, reply STOP."
-        out = safe_body_or_none(out) or "Sorry for the disturbance. Reply STOP if you want no further messages."
-        h = text_hash(out)
-        if h in conv.message_hashes:
-            out = "Understood. I’ll pause unless you want help. Reply STOP to opt out."
-            h = text_hash(out)
-        conv.message_hashes.add(h)
-        return {"action": "send", "body": out, "cta": "binary_yes_no", "rationale": "Medium-confidence frustration detected; sent one de-escalation step."}
+        policy_intent = "DE_ESCALATION"
+        out_body = "Sorry for the disturbance. I’ll keep this brief. If you prefer no further messages, reply STOP."
+        out_cta = "binary_yes_no"
+        out_rationale = "Medium-confidence frustration detected; sent one de-escalation step."
 
-    if looks_auto_reply(msg):
+    elif looks_auto_reply(msg):
         conv.auto_reply_count += 1
         if conv.auto_reply_count == 1:
             first_action = _auto_reply_first_action(conv)
             if first_action == "wait":
                 wait_seconds = env_int("AUTO_REPLY_WAIT_SECONDS", 14400)
                 return {"action": "wait", "wait_seconds": max(300, wait_seconds), "rationale": "Detected canned auto-reply; policy selected immediate backoff for first occurrence."}
-            out = "Looks like an auto-reply. When the owner is available, reply YES and I will continue from here."
-            h = text_hash(out)
-            if h in conv.message_hashes:
-                out = "Looks like an automated reply. Ask the owner to reply YES when free."
-                h = text_hash(out)
-            conv.message_hashes.add(h)
-            return {"action": "send", "body": out, "cta": "binary_yes_no", "rationale": "Detected canned auto-reply; policy selected one owner-directed nudge on first occurrence."}
-        if conv.auto_reply_count == 2:
+            policy_intent = "AUTO_REPLY_NUDGE"
+            out_body = "Looks like an auto-reply. When the owner is available, reply YES and I will continue from here."
+            out_cta = "binary_yes_no"
+            out_rationale = "Detected canned auto-reply; policy selected one owner-directed nudge on first occurrence."
+        elif conv.auto_reply_count == 2:
             wait_seconds = env_int("AUTO_REPLY_WAIT_SECONDS", 14400)
             return {"action": "wait", "wait_seconds": max(300, wait_seconds), "rationale": "Repeated auto-reply; backing off before retry."}
-        _close_conversation(conv)
-        return {"action": "end", "rationale": "Auto-reply repeated 3 times with no engagement; ending conversation."}
+        else:
+            _close_conversation(conv)
+            return {"action": "end", "rationale": "Auto-reply repeated 3 times with no engagement; ending conversation."}
 
-    # Any non-auto inbound is meaningful engagement
-    n_key = _conv_nudge_key(conv)
-    ns = nudge_state.get(n_key, NudgeState())
-    ns.engaged = True
-    nudge_state[n_key] = ns
+    else:
+        # Any non-auto inbound is meaningful engagement
+        n_key = _conv_nudge_key(conv)
+        ns = nudge_state.get(n_key, NudgeState())
+        ns.engaged = True
+        nudge_state[n_key] = ns
 
-    if looks_action_intent(msg):
-        artifact_reply = _artifact_reply_for_action_intent(conv, msg)
-        if artifact_reply:
-            h = text_hash(artifact_reply["body"])
-            if h not in conv.message_hashes:
-                conv.message_hashes.add(h)
-                return {
-                    "action": "send",
-                    "body": artifact_reply["body"],
-                    "cta": artifact_reply["cta"],
-                    "rationale": "Detected explicit commitment plus concrete artifact request; returned requested artifacts in the same turn.",
-                }
-        out = "Great. Moving to action now: I can draft the exact next message and checklist in one go. Reply CONFIRM to proceed."
-        out = safe_body_or_none(out) or "Great. Moving to action now. Reply CONFIRM to proceed."
-        h = text_hash(out)
-        if h in conv.message_hashes:
-            out = "Perfect. I will execute the next step now. Reply CONFIRM and I’ll send the ready draft."
-            h = text_hash(out)
-        conv.message_hashes.add(h)
-        return {"action": "send", "body": out, "cta": "binary_confirm_cancel", "rationale": "Detected explicit commitment; switched from qualification to action mode."}
+        if looks_action_intent(msg):
+            policy_intent = "ACTION_COMMITMENT"
+            artifact_reply = _artifact_reply_for_action_intent(conv, msg)
+            if artifact_reply:
+                out_body = artifact_reply["body"]
+                out_cta = artifact_reply["cta"]
+                out_rationale = "Detected explicit commitment plus concrete artifact request; returned requested artifacts in the same turn."
+            else:
+                out_body = "Great. Moving to action now: I can draft the exact next message and checklist in one go. Reply CONFIRM to proceed."
+                out_cta = "binary_confirm_cancel"
+                out_rationale = "Detected explicit commitment; switched from qualification to action mode."
 
-    if looks_off_topic(msg):
-        out = "I should leave GST/CA work to your accountant. On this thread, I can help with the current business trigger. Want me to continue?"
-        out = safe_body_or_none(out) or "I can only help with this current business thread. Want me to continue?"
-        h = text_hash(out)
-        if h in conv.message_hashes:
-            out = "Out of scope for me, but I can continue with this current business action. Continue?"
-            h = text_hash(out)
-        conv.message_hashes.add(h)
-        return {"action": "send", "body": out, "cta": "open_ended", "rationale": "Polite out-of-scope handling with redirect to active context."}
+        elif looks_off_topic(msg):
+            policy_intent = "OFF_TOPIC_REDIRECT"
+            out_body = "I should leave GST/CA work to your accountant. On this thread, I can help with the current business trigger. Want me to continue?"
+            out_cta = "open_ended"
+            out_rationale = "Polite out-of-scope handling with redirect to active context."
 
-    out = "Understood. I can take this forward and send a concise next-step draft now. Want that?"
-    out = safe_body_or_none(out) or "Understood. Want me to send the next-step draft?"
-    h = text_hash(out)
-    if h in conv.message_hashes:
-        out = "Got it. Want me to send a short actionable draft for this?"
-        h = text_hash(out)
-    conv.message_hashes.add(h)
-    return {"action": "send", "body": out, "cta": "open_ended", "rationale": "Acknowledged response and advanced toward a concrete next step."}
+        else:
+            policy_intent = "QUALIFICATION"
+            out_body = "Understood. I can take this forward and send a concise next-step draft now. Want that?"
+            out_cta = "open_ended"
+            out_rationale = "Acknowledged response and advanced toward a concrete next step."
+
+    # --- Step 4: Hybrid LLM Reply Drafting ---
+    if os.getenv("RULE_BASED_ONLY") != "true" and out_body:
+        # Get context records for the LLM
+        merchant = contexts.get(("merchant", conv.merchant_id), {}).get("payload", {})
+        category = contexts.get(("category", merchant.get("category_slug", "")), {}).get("payload", {})
+        trigger = contexts.get(("trigger", conv.trigger_id), {}).get("payload", {}) if conv.trigger_id else None
+        customer = contexts.get(("customer", conv.customer_id), {}).get("payload", {}) if conv.customer_id else None
+        
+        # Per-turn language switch detection
+        detected_pref = detect_message_language(msg)
+        pref = detected_pref if detected_pref else language_pref(customer, merchant)
+
+        llm_reply, llm_rationale = llm_composer.respond(
+            category=category,
+            merchant=merchant,
+            trigger=trigger,
+            customer=customer,
+            history=conv.history[:-1], # pass history excluding latest
+            latest_message=msg,
+            policy_intent=policy_intent,
+            rule_body=out_body,
+            language_pref=pref
+        )
+        out_body = llm_reply
+        out_rationale += f" | {llm_rationale}"
+
+    # Final safe check and history update
+    safe = safe_body_or_none(out_body) or out_body
+    conv.history.append({"role": "vera", "msg": safe})
+    conv.message_hashes.add(text_hash(safe))
+
+    return {"action": "send", "body": safe, "cta": out_cta, "rationale": out_rationale}
 
 
 @app.post("/v1/teardown", response_model=TeardownResponse)

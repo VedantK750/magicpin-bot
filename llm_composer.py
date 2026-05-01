@@ -120,17 +120,25 @@ CONTEXT:
 - Language: {language_pref} (CRITICAL: You MUST write in a natural mix of {mix_lang} and English using Roman script).
 - CATEGORY INSIGHTS: {category_context}
 
+STRICT MESSAGE STRUCTURE:
+Your message must follow this exact 3-part flow:
+1. [Grounded Insight]: Establish why you are messaging using a concrete fact.
+2. [Contextual Benefit]: Explain why this matters to the customer.
+3. [Call to Action]: One specific question or directive.
+
 STRICT PSYCHOLOGICAL RULES:
 1. NO SHAME / NO GUILT: If the message mentions a lapse or long absence, use a 'no judgment' framing. NEVER sound needy or pushy.
 2. ULTRA-LOW FRICTION: If the factual message contains choices or slots, YOU MUST format the CTA as: "Reply 1 for [Choice A], 2 for [Choice B], or tell us a time that works."
 3. MOLECULE PRECISION: For pharmacy refills, always explicitly list the medicine names.
 
 STRICT OPERATIONAL RULES:
-1. MANDATORY CODE-MIXING: Start with a greeting in {mix_lang}. You MUST mix {mix_lang} and English throughout the message.
-2. VERIFIABLE SPECIFICITY & CITATIONS: Weave the provided facts and dates into the message naturally. Cite sources like 'according to our records'.
-3. PUNCHY & BRIEF: Keep the total length under 150 words. No filler.
-4. No 'Vera' or 'magicpin'. No URLs.
-5. ANTI-HALLUCINATION: Use explicit facts only. Do not extrapolate visit counts (e.g., do not say 'this is your 5th visit'). Frame availability accurately; do not claim slots are 'full' or 'sold out' unless explicitly stated.
+1. TERMINAL HOOK RULE: The Call to Action (CTA) MUST be the absolute final sentence of your message. NEVER add sign-offs, signatures, or pleasantries (like 'Regards' or 'Have a great day') after the CTA.
+2. SINGLE OBJECTIVE RULE: Focus exclusively on one goal. Do not ask multiple independent questions or suggest unrelated actions.
+3. MANDATORY CODE-MIXING: Start with a greeting in {mix_lang}. You MUST mix {mix_lang} and English throughout the message.
+4. VERIFIABLE SPECIFICITY & CITATIONS: Weave the provided facts and dates into the message naturally. Cite sources like 'according to our records'.
+5. PUNCHY & BRIEF: Keep the total length under 150 words. No filler.
+6. No 'Vera' or 'magicpin'. No URLs.
+7. ANTI-HALLUCINATION: Use explicit facts only. Do not extrapolate visit counts.
 """
     else:
         # Role: Vera (AI Assistant) talking to Merchant
@@ -144,18 +152,21 @@ CONTEXT:
 - Language: {language_pref} (CRITICAL: You MUST write in a professional mix of {mix_lang} and English using Roman script).
 - CATEGORY EXPERTISE: {category_context}
 
-STRICT OPERATOR RULES:
-1. OPERATOR LEXICON: Use industry terms ('covers', 'AOV', 'CTR', 'retention'). Speak operator-to-operator.
-2. CONTRARIAN INSIGHT: If the factual message asks for a plan, use the CATEGORY EXPERTISE to provide a brilliant, expert strategic recommendation.
-3. CITATIONS & CONTEXT FUSION: Cite sources naturally (e.g. 'according to magicpin performance data', 'based on industry benchmarks'). You MUST tie industry insights directly to the merchant's current performance data.
-4. MANDATORY CODE-MIXING: Start with a greeting in {mix_lang}. You MUST mix {mix_lang} and English throughout.
-5. AGGRESSIVE BREVITY: Start immediately with the insight. No intro filler. TOTAL LENGTH: Maximum 180 words.
-6. NO ASSUMPTIONS: Do NOT assume the merchant has specific revenue splits, inventory, or equipment unless explicitly stated. Stick to general industry trends if context is missing.
-7. ANTI-HALLUCINATION: Frame category insights as general trends (e.g., 'evenings usually run at 90% capacity'), do not make absolute guarantees about the merchant's exact current state unless in the payload. Use ONLY provided facts. DO NOT invent prices or percentages.
+STRICT MESSAGE STRUCTURE:
+Your message must follow this exact 3-part flow:
+1. [Grounded Insight]: Start immediately with the insight or performance signal.
+2. [Expert Coaching]: Provide a strategic recommendation or "Why this matters."
+3. [Terminal CTA]: One specific question to advance the action.
 
-STRICT OPERATIONAL RULES:
-1. Speak as Vera. Use ONLY provided facts. DO NOT invent prices or percentages.
-2. No URLs. Use Roman script for {mix_lang}.
+STRICT OPERATOR RULES:
+1. TERMINAL HOOK RULE: The Call to Action (CTA) MUST be the absolute final sentence of your message. NEVER add sign-offs, pleasantries, or conclusions after the CTA.
+2. SINGLE OBJECTIVE RULE: Maintain a single focus. Do not ask more than one question or propose more than one independent action.
+3. OPERATOR LEXICON: Use industry terms ('covers', 'AOV', 'CTR', 'retention'). Speak operator-to-operator.
+4. CONTRARIAN INSIGHT: If the factual message asks for a plan, use the CATEGORY EXPERTISE to provide a brilliant, expert strategic recommendation.
+5. CITATIONS & CONTEXT FUSION: Cite sources naturally. You MUST tie industry insights directly to the merchant's current performance data.
+6. MANDATORY CODE-MIXING: Start with a greeting in {mix_lang}. You MUST mix {mix_lang} and English throughout.
+7. AGGRESSIVE BREVITY: Maximum 180 words. Start immediately with the insight.
+8. ANTI-HALLUCINATION: Use ONLY provided facts. DO NOT invent prices or percentages.
 """
 
     user_prompt = f"""FACTUAL MESSAGE:
@@ -205,3 +216,85 @@ OUTPUT ONLY THE MESSAGE BODY. NO INTRO, NO OUTRO, NO QUOTES."""
             
     except Exception as e:
         return rule_body, f"LLM Error: {str(e)} (Fallback to Rules)"
+
+
+def respond(
+    category: Dict[str, Any],
+    merchant: Dict[str, Any],
+    trigger: Optional[Dict[str, Any]],
+    customer: Optional[Dict[str, Any]],
+    history: List[Dict[str, str]],
+    latest_message: str,
+    policy_intent: str,
+    rule_body: str,
+    language_pref: str = "en"
+) -> Tuple[str, str]:
+    provider = DeepSeekProvider(LLM_API_KEY, LLM_MODEL)
+    
+    cat_name = category.get("name", "Business")
+    biz_name = merchant.get("identity", {}).get("name", "your business")
+    owner = merchant.get("identity", {}).get("owner_name", "there")
+    voice = category.get("voice", {})
+    tone = voice.get("tone", "professional and helpful")
+    taboos = voice.get("vocab_taboo", [])
+    
+    # Extract mixing language
+    mix_lang = "Hindi"
+    if "-en" in language_pref:
+        lang_code = language_pref.split("-")[0]
+        lang_map = {"hi": "Hindi", "te": "Telugu", "ta": "Tamil", "kn": "Kannada", "mr": "Marathi", "bn": "Bengali", "gu": "Gujarati", "pa": "Punjabi", "ml": "Malayalam"}
+        mix_lang = lang_map.get(lang_code, lang_code.upper())
+
+    # Build history string
+    history_str = "\n".join([f"{h['role'].upper()}: {h['msg']}" for h in history[-5:]])
+
+    system_prompt = f"""You are Vera, an expert AI industry peer for '{biz_name}' ({cat_name}).
+Your goal is to continue a conversation with the merchant/customer naturally and professionally.
+
+CONTEXT:
+- Category: {cat_name}
+- Tone: {tone}
+- Language: {language_pref} (You MUST write in a natural mix of {mix_lang} and English).
+- POLICY INTENT: {policy_intent}
+
+STRICT CONVERSATIONAL RULES:
+1. PERSISTENCE: Maintain the expert-peer persona established in previous turns.
+2. NO REPETITION: Do NOT repeat facts or questions already discussed in the HISTORY.
+3. INTENT ALIGNMENT: 
+   - If POLICY INTENT is 'AUTO_REPLY_NUDGE', be polite and acknowledge you'll wait for the owner.
+   - If POLICY INTENT is 'ACTION_COMMITMENT', generate the final draft/plan/artifact immediately.
+   - If POLICY INTENT is 'DE_ESCALATION', be extremely respectful and offer a clear way to stop.
+4. BREVITY: Keep replies under 60 words. No filler.
+5. MANDATORY CODE-MIXING: Start with a greeting if it's the start of the message.
+"""
+
+    user_prompt = f"""CONVERSATION HISTORY:
+{history_str}
+
+USER LATEST MESSAGE:
+"{latest_message}"
+
+FACTUAL BASELINE (from rules):
+"{rule_body}"
+
+Write the next response in the conversation while strictly following the rules above."""
+
+    try:
+        start_time = time.time()
+        llm_output = provider.complete(user_prompt, system=system_prompt)
+        latency = time.time() - start_time
+        
+        llm_output = llm_output.strip('"').strip("'").strip()
+        
+        # Loose validation for replies (safety focus)
+        if re.search(r'https?://\S+|www\.\S+', llm_output):
+             return rule_body, f"LLM Reply Rejected: Contains URL"
+        
+        for taboo in taboos:
+            if taboo.lower() in llm_output.lower():
+                return rule_body, f"LLM Reply Rejected: Taboo word"
+
+        return llm_output, f"LLM Responded ({latency:.2f}s)"
+            
+    except Exception as e:
+        return rule_body, f"LLM Reply Error: {str(e)}"
