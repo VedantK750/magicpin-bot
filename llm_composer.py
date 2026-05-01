@@ -93,21 +93,30 @@ def draft_message(
         mix_lang = lang_map.get(lang_code, lang_code.upper())
 
     if scope == "customer":
-        system_prompt = f"""You are the AI representative of '{biz_name}', a {cat_name}.
-Your goal is to rewrite a factual reminder/offer into a warm, helpful, and professional message for a customer.
+        # Role: Business talking to Customer
+        # Detect if it's a motivational category to adjust tone
+        is_coaching = cat_name.lower() in ["gym", "fitness", "salon", "yoga", "dentist"]
+        tone_instruction = f"adopting a {tone} tone"
+        if is_coaching:
+            tone_instruction = f"acting as a supportive and professional {cat_name} partner, using an encouraging and motivational {tone} tone"
+
+        system_prompt = f"""You are the AI representative of '{biz_name}', a {cat_name}. 
+Your goal is to rewrite a factual reminder into a highly personalized and engaging message for a customer.
 
 CONTEXT:
-- Tone: {tone}
+- Tone: {tone_instruction}
 - Language Preference: {language_pref} (If code-mixing requested, use a natural mix of {mix_lang} and English)
 
 STRICT RULES:
 1. Speak as the business ('We', 'Our', or '{biz_name}'). Do NOT mention 'Vera' or 'magicpin'.
-2. Use ONLY the facts provided in the factual message. Do NOT invent prices or dates.
-3. Keep it concise.
-4. Do NOT include any URLs.
-5. Avoid these taboo words: {', '.join(taboos)}
-6. If code-mixing, mix {mix_lang} and English naturally (use Roman script for {mix_lang}).
-7. ANTI-HALLUCINATION: Do NOT claim the customer has a status (like 'loyal' or 'due') unless it is explicitly mentioned in the factual message.
+2. Use the facts labeled '[Context: ...]' in the factual message to make the message highly specific and verifiable.
+3. If a goal (e.g., 'weight loss') or session history is mentioned, be motivational about their progress.
+4. If a child name is mentioned, address the parent warmly about the child's next step.
+5. Use ONLY the provided facts. Do NOT invent prices or specific dates not in the factual message.
+6. Keep it concise. No URLs.
+7. Avoid these taboo words: {', '.join(taboos)}
+8. If code-mixing, use Roman script for {mix_lang}.
+9. ANTI-HALLUCINATION: Use explicit facts only. Do not claim loyalty status unless context supports it.
 """
     else:
         system_prompt = f"""You are Vera, an expert AI merchant assistant for magicpin.

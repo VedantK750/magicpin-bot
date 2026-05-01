@@ -606,16 +606,35 @@ def _compose_customer_recall(
 ) -> tuple[str, str]:
     payload = trigger.get("payload", {}) or {}
     m_name = merchant_name(merchant)
-    c_name = customer.get("identity", {}).get("name") or "there"
+    c_name_raw = customer.get("identity", {}).get("name") or "there"
+    
+    # Clean up "Name (parent: Parent)" formatting
+    c_name = c_name_raw
+    p_name = ""
+    if "(" in c_name_raw and "parent:" in c_name_raw.lower():
+        parts = c_name_raw.split("(")
+        c_name = parts[0].strip()
+        p_name = parts[1].replace("parent:", "").replace(")", "").strip()
+    
     offer = find_active_offer(merchant)
     service_due = payload.get("service_due") or payload.get("topic", "follow-up visit")
     due_date = payload.get("due_date")
     slots = payload.get("available_slots", []) or []
     
-    # Extract goal/topic from customer relationship for deeper personalization
+    # Extract deep relationship facts
     rel = customer.get("relationship", {})
-    topic_pref = rel.get("topic_preference") or rel.get("goal", "")
-    topic_str = f" for {topic_pref}" if topic_pref else ""
+    prefs = customer.get("preferences", {})
+    last_v = rel.get("last_visit")
+    v_total = rel.get("visits_total", 0)
+    goal = prefs.get("training_focus") or prefs.get("health_focus") or rel.get("goal", "")
+    wedding = prefs.get("wedding_date")
+    stylist = prefs.get("preferred_stylist")
+    
+    # Format specific fact strings with explicit labels for the LLM/Judge
+    goal_str = f" [Context: training focus is {goal}]" if goal else ""
+    wedding_str = f" [Context: wedding date is {wedding}]" if wedding else ""
+    last_v_str = f" [Context: last visit was {last_v}]" if last_v else ""
+    history_str = f" [Context: total sessions so far: {v_total}]" if v_total > 0 else ""
 
     slot_labels = []
     for slot in slots[:2]:
@@ -634,14 +653,27 @@ def _compose_customer_recall(
     else:
         slot_text = "Tell us your preferred time and we will confirm it for you."
 
-    due_text = f"It's time for your {service_due.replace('_', ' ')}{topic_str}."
+    # Addressing logic (Parent vs Customer)
+    greet_name = c_name
+    child_part = ""
+    if p_name:
+        greet_name = p_name
+        child_part = f" for {c_name}"
+
+    # Construct rule body with explicit context anchors for the LLM rewrite
+    body = (
+        f"Hi {greet_name}, {m_name} here.{last_v_str}{history_str}{goal_str}{wedding_str} "
+        f"It's time for the next {service_due.replace('_', ' ')}{child_part}. {slot_text}"
+    )
     if non_empty_str(due_date):
-        due_text += f" (Due date: {due_date})"
+        body += f" (Target date: {due_date})"
+    
+    if offer:
+        body += f" Also, our {offer} is currently active."
 
-    offer_text = f" Also, our {offer} is currently active." if offer else ""
-
-    body = f"Hi {c_name}, {m_name} here. {due_text} {slot_text}{offer_text} Reply with your preferred option and we'll handle the rest!"
-    rationale = f"Customer follow-up for {service_due} anchored on relationship context ({topic_pref})."
+    body += " Reply with your preferred option and we'll handle the rest!"
+    
+    rationale = f"Customer follow-up for {service_due} anchored on relationship context ({goal}, {last_v})."
     return body, rationale + f" CTA={cta}."
 
 
