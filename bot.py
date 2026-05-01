@@ -1087,10 +1087,10 @@ async def healthz():
 @app.get("/v1/metadata", response_model=MetadataResponse)
 async def metadata():
     return {
-        "team_name": "Codex Implementation",
-        "team_members": ["Codex"],
-        "model": "rule_based_v1",
-        "approach": "deterministic context-grounded composer + reply policy state machine",
+        "team_name": "Team Vedant",
+        "team_members": ["Vedant"],
+        "model": "Vera_Hybrid_LLM_v1",
+        "approach": "hybrid rule-based safety + deepseek-chat drafting with dynamic context injection",
         "contact_email": "na@example.com",
         "version": "0.1.0",
         "submitted_at": "2026-04-30T00:00:00Z",
