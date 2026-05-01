@@ -130,7 +130,7 @@ STRICT OPERATIONAL RULES:
 2. VERIFIABLE SPECIFICITY & CITATIONS: Weave the provided facts and dates into the message naturally. Cite sources like 'according to our records'.
 3. PUNCHY & BRIEF: Keep the total length under 150 words. No filler.
 4. No 'Vera' or 'magicpin'. No URLs.
-5. ANTI-HALLUCINATION: Use explicit facts only. Do not claim loyalty status unless context supports it.
+5. ANTI-HALLUCINATION: Use explicit facts only. Do not extrapolate visit counts (e.g., do not say 'this is your 5th visit'). Frame availability accurately; do not claim slots are 'full' or 'sold out' unless explicitly stated.
 """
     else:
         # Role: Vera (AI Assistant) talking to Merchant
@@ -151,6 +151,7 @@ STRICT OPERATOR RULES:
 4. MANDATORY CODE-MIXING: Start with a greeting in {mix_lang}. You MUST mix {mix_lang} and English throughout.
 5. AGGRESSIVE BREVITY: Start immediately with the insight. No intro filler. TOTAL LENGTH: Maximum 180 words.
 6. NO ASSUMPTIONS: Do NOT assume the merchant has specific revenue splits, inventory, or equipment unless explicitly stated. Stick to general industry trends if context is missing.
+7. ANTI-HALLUCINATION: Frame category insights as general trends (e.g., 'evenings usually run at 90% capacity'), do not make absolute guarantees about the merchant's exact current state unless in the payload. Use ONLY provided facts. DO NOT invent prices or percentages.
 
 STRICT OPERATIONAL RULES:
 1. Speak as Vera. Use ONLY provided facts. DO NOT invent prices or percentages.
@@ -179,7 +180,28 @@ OUTPUT ONLY THE MESSAGE BODY. NO INTRO, NO OUTRO, NO QUOTES."""
         if is_valid:
             return llm_output, f"LLM Drafted ({latency:.2f}s)"
         else:
-            return rule_body, f"LLM Rejected: {reason} (Fallback to Rules)"
+            # --- Self-Correction Loop (1 Retry) ---
+            repair_prompt = (
+                f"{user_prompt}\n\n"
+                f"--- YOUR PREVIOUS DRAFT ---\n{llm_output}\n\n"
+                f"--- VALIDATOR REJECTION REASON ---\n"
+                f"{reason}\n\n"
+                f"Rewrite the message to fix this error. If it was a hallucinated number, remove or correct it. "
+                f"If it was a taboo word, change it. Maintain the tone and code-mixing.\n"
+                f"OUTPUT ONLY THE REPAIRED MESSAGE BODY. NO INTRO, NO OUTRO, NO QUOTES."
+            )
+            
+            retry_start = time.time()
+            repaired_output = provider.complete(repair_prompt, system=system_prompt)
+            retry_latency = time.time() - retry_start
+            
+            repaired_output = repaired_output.strip('"').strip("'").strip()
+            is_valid_repaired, new_reason = Validator.validate(repaired_output, rule_body, category_context, hidden_facts, taboos)
+            
+            if is_valid_repaired:
+                return repaired_output, f"LLM Repaired ({latency + retry_latency:.2f}s) [Fixed: {reason}]"
+            else:
+                return rule_body, f"LLM Rejected Twice: {new_reason} (Fallback to Rules)"
             
     except Exception as e:
         return rule_body, f"LLM Error: {str(e)} (Fallback to Rules)"
