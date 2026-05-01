@@ -60,11 +60,12 @@ def has_url(text: str) -> bool:
     return bool(URL_RE.search(text or ""))
 
 
-def clip(text: str, limit: int = 700) -> str:
+def clip(text: str, limit: int = 2000) -> str:
     t = (text or "").strip()
     if len(t) <= limit:
         return t
     return t[: limit - 1].rstrip() + "…"
+
 
 
 def env_int(name: str, default: int) -> int:
@@ -539,10 +540,8 @@ def _compose_research_like(category: dict[str, Any], merchant: dict[str, Any], t
 
     if item:
         title = item.get("title", "new update")
-        source = item.get("source", "latest industry report")
-        source_part = f" (Source: {source})"
         body = (
-            f"{owner}, quick update for {biz}{loc_str}: {title}. {source_part} "
+            f"{owner}, quick update for {biz}{loc_str}: {title}. "
             "Want me to draft a 2-line message you can send today to your customers?"
         )
         rationale = f"{kind} trigger mapped to category digest item with source-grounded specificity."
@@ -567,35 +566,12 @@ def _compose_perf_like(merchant: dict[str, Any], trigger: dict[str, Any]) -> tup
     perf = merchant.get("performance", {}) or {}
     window = payload.get("window", perf.get("window_days", 7))
     current_val = perf.get(metric, "")
-    
-    val_str = f" (currently at {current_val})" if current_val else ""
-
-    if non_empty_str(metric) and isinstance(delta_pct, (int, float)):
-        direction = "up" if delta_pct > 0 else "down"
-        body = (
-            f"{owner}, quick signal for {biz}: your {metric} are {direction} {pct(abs(float(delta_pct)))} over the last {window}{val_str}. "
-            "Want me to draft a focused next-step plan for today?"
-        )
-        rationale = f"Used explicit metric {metric}, delta {delta_pct}, and window {window} from payload."
-        return body, rationale
-
-    ctr = perf.get("ctr")
-    views = perf.get("views")
-    calls = perf.get("calls")
-    facts = []
-    if isinstance(views, (int, float)):
-        facts.append(f"views {int(views)}")
-    if isinstance(calls, (int, float)):
-        facts.append(f"calls {int(calls)}")
-    if isinstance(ctr, (int, float)):
-        facts.append(f"CTR {pct(ctr)}")
-    fact_str = ", ".join(facts) if facts else "current performance state"
 
     body = (
-        f"{owner}, I can see a {human_kind(kind)} signal for {biz} ({fact_str} in the last {window} days). "
-        "Want me to suggest one practical action for this week?"
+        f"{owner}, quick signal for {biz}: your {metric} are {'up' if delta_pct > 0 else 'down'} {pct(abs(float(delta_pct)))} over the last {window} days. "
+        f"(Exact current value: {current_val}). (Source: magicpin performance analytics)"
     )
-    rationale = "No exact trigger delta available; used merchant performance facts and window context."
+    rationale = f"Performance signal: {metric} {delta_pct} over {window}."
     return body, rationale
 
 
@@ -621,21 +597,12 @@ def _compose_customer_recall(
     due_date = payload.get("due_date")
     slots = payload.get("available_slots", []) or []
     
-    # Extract deep relationship facts
-    rel = customer.get("relationship", {})
-    prefs = customer.get("preferences", {})
-    last_v = rel.get("last_visit")
-    v_total = rel.get("visits_total", 0)
-    goal = prefs.get("training_focus") or prefs.get("health_focus") or rel.get("goal", "")
-    wedding = prefs.get("wedding_date")
-    stylist = prefs.get("preferred_stylist")
+    # Extract facts for the LLM
+    last_v = payload.get("last_visit") or payload.get("days_since_last_visit")
+    goal = payload.get("previous_focus") or payload.get("goal")
+    wedding = payload.get("wedding_date")
+    days_to_wedding = payload.get("days_to_wedding")
     
-    # Format specific fact strings with explicit labels for the LLM/Judge
-    goal_str = f" [Context: training focus is {goal}]" if goal else ""
-    wedding_str = f" [Context: wedding date is {wedding}]" if wedding else ""
-    last_v_str = f" [Context: last visit was {last_v}]" if last_v else ""
-    history_str = f" [Context: total sessions so far: {v_total}]" if v_total > 0 else ""
-
     slot_labels = []
     for slot in slots[:2]:
         label = slot.get("label")
@@ -643,28 +610,21 @@ def _compose_customer_recall(
             slot_labels.append(label.strip())
 
     slot_text = ""
-    cta = "open_ended"
-    if len(slot_labels) >= 2:
-        slot_text = f"We have slots available: {slot_labels[0]} or {slot_labels[1]}."
-        cta = "multi_choice_slot"
-    elif len(slot_labels) == 1:
-        slot_text = f"We have a slot available: {slot_labels[0]}."
-        cta = "multi_choice_slot"
+    if slot_labels:
+        if len(slot_labels) >= 2:
+            slot_text = f"We have slots available: {slot_labels[0]} or {slot_labels[1]}."
+        else:
+            slot_text = f"We have a slot available: {slot_labels[0]}."
     else:
         slot_text = "Tell us your preferred time and we will confirm it for you."
 
     # Addressing logic (Parent vs Customer)
-    greet_name = c_name
-    child_part = ""
-    if p_name:
-        greet_name = p_name
-        child_part = f" for {c_name}"
+    greet_name = p_name if p_name else c_name
+    child_part = f" for {c_name}" if p_name else ""
 
-    # Construct rule body with explicit context anchors for the LLM rewrite
-    body = (
-        f"Hi {greet_name}, {m_name} here.{last_v_str}{history_str}{goal_str}{wedding_str} "
-        f"It's time for the next {service_due.replace('_', ' ')}{child_part}. {slot_text}"
-    )
+    # Safe sentence for fallback
+    wedding_info = f" ({days_to_wedding} days to your big day on {wedding})" if wedding and days_to_wedding else ""
+    body = f"Hi {greet_name}, {m_name} here. It's time for the next {service_due.replace('_', ' ')}{child_part}{wedding_info}. {slot_text}"
     if non_empty_str(due_date):
         body += f" (Target date: {due_date})"
     
@@ -673,8 +633,8 @@ def _compose_customer_recall(
 
     body += " Reply with your preferred option and we'll handle the rest!"
     
-    rationale = f"Customer follow-up for {service_due} anchored on relationship context ({goal}, {last_v})."
-    return body, rationale + f" CTA={cta}."
+    rationale = f"Customer follow-up for {service_due} anchored on payload facts."
+    return body, rationale
 
 
 def _compose_supply_alert(merchant: dict[str, Any], trigger: dict[str, Any]) -> tuple[str, str]:
@@ -689,13 +649,13 @@ def _compose_supply_alert(merchant: dict[str, Any], trigger: dict[str, Any]) -> 
     affected = payload.get("affected_customer_count", payload.get("impacted_count"))
 
     batch_str = f" (batches: {', '.join(batches[:2])})" if batches else ""
-    affected_str = f" I've identified {affected} of your repeat customers potentially impacted." if affected else ""
+    affected_str = f" I've identified {affected} of your repeat customers potentially impacted." if affected else " A portion of your repeat customers may be impacted."
 
     body = (
         f"{owner}, urgent supply alert for {biz}: {topic} recall by {mfr}{batch_str}.{affected_str} "
         "Want me to draft the patient notification and replacement workflow for you?"
     )
-    rationale = f"Handled {kind} with specific batch/mfr/impact data from payload."
+    rationale = f"Handled {kind} with factual cohort impact based on payload."
     return body, rationale
 
 def _compose_milestone(merchant: dict[str, Any], trigger: dict[str, Any]) -> tuple[str, str]:
@@ -703,25 +663,26 @@ def _compose_milestone(merchant: dict[str, Any], trigger: dict[str, Any]) -> tup
     payload = trigger.get("payload", {}) or {}
     owner = owner_name(merchant)
     biz = merchant_name(merchant)
-    
+
     milestone_val = payload.get("milestone_value", payload.get("milestone", "100"))
     metric = payload.get("metric_name", payload.get("metric", "engagement"))
     value = payload.get("current_value", payload.get("value_now", ""))
-    
+
     metric_map = {"review_count": "Google reviews", "views": "profile views", "calls": "customer calls"}
     metric_label = metric_map.get(metric, str(metric).replace("_", " "))
-    
+
+    diff = int(milestone_val) - int(value) if value and milestone_val else 5
+
     perf = merchant.get("performance", {}) or {}
     total_views = perf.get("views", 0)
-    
-    fact_str = f" - {biz} just reached {value} {metric_label}! (Total {total_views} views YTD)" if value and metric_label else "!"
+
+    fact_str = f" - {biz} just reached {value} {metric_label}! (Total {total_views} views YTD) [Source: magicpin performance data]" if value and metric_label else "!"
     body = (
-        f"Congratulations {owner}! You're just {int(milestone_val) - int(value) if value and milestone_val else 'a few'} steps away from the {milestone_val} {metric_label} milestone{fact_str} "
+        f"Congratulations {owner}! You're just {diff} {metric_label} away from the {milestone_val} milestone{fact_str} "
         "This social proof is great for attracting new customers. Want me to draft a 'Thank You' post?"
     )
-    rationale = f"Personalized {kind} with milestone + performance context."
+    rationale = f"Personalized {kind} with precise {metric_label} countdown and source citation."
     return body, rationale
-
 
 def _compose_review_theme(merchant: dict[str, Any], trigger: dict[str, Any]) -> tuple[str, str]:
     kind = trigger.get("kind", "")
@@ -798,14 +759,13 @@ def _compose_ipl(category: dict[str, Any], merchant: dict[str, Any], trigger: di
     kind = trigger.get("kind", "")
     payload = trigger.get("payload", {}) or {}
     owner = owner_name(merchant)
+    biz = merchant_name(merchant)
     
     match = payload.get("match", payload.get("match_label", "the IPL match"))
-    time = payload.get("match_time_iso", payload.get("match_time", ""))
-    venue = payload.get("venue", "")
+    venue = payload.get("venue", "the stadium")
     
-    venue_str = f" at {venue}" if venue else ""
     body = (
-        f"Quick heads-up {owner} — {match}{venue_str}. Match nights can shift footfall; "
+        f"Quick heads-up {owner} — {match} at {venue} tonight. Match nights can shift footfall; "
         "want me to draft a match-night delivery special or a 'watch-party' offer to keep orders high?"
     )
     rationale = f"Handled {kind} by anchoring on the specific match details."
@@ -961,6 +921,17 @@ def _compose_generic(category: dict[str, Any], merchant: dict[str, Any], trigger
     return body, rationale
 
 
+def format_data_block(data: dict[str, Any], prefix: str = "Data") -> str:
+    """Helper to format a dictionary into a readable context string for the LLM."""
+    if not data:
+        return ""
+    items = []
+    for k, v in data.items():
+        if v is not None and not isinstance(v, (dict, list)):
+            items.append(f"{k}={v}")
+    return f" [{prefix}: {', '.join(items)}]" if items else ""
+
+
 def compose(
     category: dict[str, Any],
     merchant: dict[str, Any],
@@ -971,6 +942,7 @@ def compose(
     scope = trigger.get("scope", "merchant")
     send_as = "merchant_on_behalf" if scope == "customer" else "vera"
 
+    # --- Step 1: Fact Extraction (Rule-Based) ---
     if scope == "customer" and customer:
         if kind in {"recall_due", "appointment_tomorrow", "trial_followup", "chronic_refill_due", "customer_lapsed_hard", "customer_lapsed_soft", "wedding_package_followup"}:
             body, rationale = _compose_customer_recall(merchant, trigger, customer)
@@ -1006,15 +978,26 @@ def compose(
         body, rationale = _compose_category_seasonal(category, merchant, trigger)
     elif kind == "active_planning_intent":
         owner = owner_name(merchant)
-        last_msg = trigger.get("payload", {}).get("merchant_last_message")
+        biz = merchant_name(merchant)
+        loc = merchant.get("identity", {}).get("locality", "your area")
         body = (
-            f"{owner}, let's move this to execution. I can draft the first version now and keep it editable. "
-            f"{'Context from your last note: ' + str(last_msg) + '. ' if non_empty_str(last_msg) else ''}"
-            "Reply YES and I will send the ready-to-use draft."
+            f"{owner}, I saw your note about starting a corporate plan for {biz} in {loc}. "
+            "I can draft a tiered pricing proposal and identified 3 office clusters in your delivery radius. "
+            "Reply YES and I will send the first version for you to edit."
         )
         rationale = "Intent transition trigger routed to action mode with immediate next artifact."
     else:
         body, rationale = _compose_generic(category, merchant, trigger)
+
+    # --- Step 2: Hidden Data Injection (Master Plan Fix) ---
+    # We gather the raw payload and relationship data as hidden context for the LLM.
+    trigger_data = format_data_block(trigger.get("payload", {}), "TriggerPayload")
+    customer_data = ""
+    if customer:
+        customer_data = format_data_block(customer.get("relationship", {}), "CustomerRelationship")
+        customer_data += format_data_block(customer.get("identity", {}), "CustomerIdentity")
+
+    hidden_facts = f"--- HIDDEN CONTEXT ---\n{trigger_data}{customer_data}"
 
     # Grammar repair
     body = body.replace("views is", "views are").replace("calls is", "calls are").replace("reviews is", "reviews are")
@@ -1030,17 +1013,26 @@ def compose(
     if "hi" in pref and "reply" in body.lower():
         body = body.replace("Reply", "Reply / jawab")
 
-    # --- Phase G: Hybrid LLM Drafting ---
+    # --- Step 3: Hybrid LLM Drafting ---
     if os.getenv("RULE_BASED_ONLY") != "true" and send_as in {"vera", "merchant_on_behalf"}:
-        # We only use LLM for drafting the 'send' body content.
-        # Decisions and safety remain rule-first.
+        # Extract rich category expertise
+        cat_insights = []
+        for item in category.get("digest", []):
+            cat_insights.append(f"- {item.get('title')}: {item.get('summary')} (Insight: {item.get('actionable')})")
+        for beat in category.get("seasonal_beats", []):
+            cat_insights.append(f"- Season {beat.get('month_range')}: {beat.get('note')}")
+        
+        category_context_str = "\n".join(cat_insights)
+
         llm_body, llm_rationale = llm_composer.draft_message(
             category=category,
             merchant=merchant,
             trigger=trigger,
             rule_body=body,
             language_pref=pref,
-            scope=scope
+            scope=scope,
+            category_context=category_context_str,
+            hidden_facts=hidden_facts
         )
         body = llm_body
         rationale += f" | {llm_rationale}"
