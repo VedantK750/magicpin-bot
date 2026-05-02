@@ -11,8 +11,11 @@ from typing import Any, Literal, Optional, Union
 
 from fastapi import FastAPI, Response
 from pydantic import BaseModel, Field
+from dotenv import load_dotenv
 
 import llm_composer
+
+load_dotenv()
 
 
 app = FastAPI(title="magicpin-challenge-bot", version="0.1.0")
