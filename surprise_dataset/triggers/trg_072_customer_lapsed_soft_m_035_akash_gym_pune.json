@@ -1,0 +1,15 @@
+{
+  "id": "trg_072_customer_lapsed_soft_m_035_akash_gym_pune",
+  "scope": "customer",
+  "kind": "customer_lapsed_soft",
+  "source": "internal",
+  "merchant_id": "m_035_akash_gym_pune",
+  "customer_id": "c_138_kavya_for_m_035_akash_gym_pune",
+  "payload": {
+    "placeholder": true,
+    "metric_or_topic": "customer_lapsed_soft"
+  },
+  "urgency": 3,
+  "suppression_key": "customer_lapsed_soft:m_035_akash_gym_pune:gen_72",
+  "expires_at": "2026-06-30T00:00:00Z"
+}

@@ -1,0 +1,52 @@
+{
+  "merchant_id": "m_033_lalit_restaurant_lucknow",
+  "category_slug": "restaurants",
+  "identity": {
+    "name": "Family Diner",
+    "city": "Lucknow",
+    "locality": "Vibhuti Khand",
+    "place_id": "ChIJ_VIBHUTI_KHAND_RESTAURANTS_033",
+    "verified": true,
+    "languages": [
+      "en",
+      "hi"
+    ],
+    "owner_first_name": "Lalit",
+    "established_year": 2021
+  },
+  "subscription": {
+    "status": "active",
+    "plan": "Pro",
+    "days_remaining": 183,
+    "days_since_expiry": null
+  },
+  "performance": {
+    "window_days": 30,
+    "views": 2970,
+    "calls": 16,
+    "directions": 47,
+    "ctr": 0.027,
+    "leads": 2,
+    "delta_7d": {
+      "views_pct": -0.19,
+      "calls_pct": -0.13
+    }
+  },
+  "offers": [
+    {
+      "title": "Combo Deal",
+      "price": "\u20b9199",
+      "status": "active"
+    }
+  ],
+  "conversation_history": [],
+  "customer_aggregate": {
+    "total_unique_ytd": 1905
+  },
+  "signals": [],
+  "review_themes": [
+    "Great service",
+    "Prompt response",
+    "Value for money"
+  ]
+}

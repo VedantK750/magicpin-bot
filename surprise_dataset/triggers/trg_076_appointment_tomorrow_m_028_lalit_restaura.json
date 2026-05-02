@@ -1,0 +1,15 @@
+{
+  "id": "trg_076_appointment_tomorrow_m_028_lalit_restaura",
+  "scope": "customer",
+  "kind": "appointment_tomorrow",
+  "source": "internal",
+  "merchant_id": "m_028_lalit_restaurant_chandigarh",
+  "customer_id": "c_109_tara_for_m_028_lalit_restaurant_chandigarh",
+  "payload": {
+    "placeholder": true,
+    "metric_or_topic": "appointment_tomorrow"
+  },
+  "urgency": 2,
+  "suppression_key": "appointment_tomorrow:m_028_lalit_restaurant_chandigarh:gen_76",
+  "expires_at": "2026-06-30T00:00:00Z"
+}

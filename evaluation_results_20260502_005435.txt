@@ -1,0 +1,279 @@
+EVALUATION RUN - 2026-05-02T00:54:35.962515
+================================================================================
+
+TRIGGER: trg_036_perf_spike_m_023_renu_salon_ahm
+MERCHANT: m_023_renu_salon_ahmedabad
+SCORE: 42/50
+BREAKDOWN: Spec:9, Cat:9, Merch:9, Dec:7, Eng:8, Pen:-0
+----------------------------------------
+MESSAGE:
+Renu, aapke Beauty Lounge Bodakdev ke profile pe views 4668 tak pahunch gaye hain aur calls bhi 17 aa rahe hain — yeh ek strong signal hai ki log aapko dekh aur connect kar rahe hain. Is momentum ko catch karna aur apne salon ko aur grow karna ab ek smart move hoga. Kya aap chahengi ki main is spike ke source ko analyze karun aur ek simple plan suggest karun?
+----------------------------------------
+RATIONALE: The message includes verifiable numbers (views 4668, calls 17) from the context, making it concrete and specific. The warm, practical voice fits a salon perfectly—friendly yet professional, with no taboos violated. Uses owner's name 'Renu' and references her salon 'Beauty Lounge Bodakdev' and actual performance data, showing strong personalization.
+
+================================================================================
+
+TRIGGER: trg_009_winback_glamour
+MERCHANT: m_004_glamour_salon_pune
+SCORE: 41/50
+BREAKDOWN: Spec:8, Cat:9, Merch:9, Dec:8, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Anjali, tumchya Glamour Lounge Spa & Salon sathi 24 regular customers 38 divas pasun aale nahi, ani tumcha CTR 2.2% var aahe—ek strong baseline aahe. He lapsed customers parat aana ek chhota 'welcome back' offer ne shakya aahe. Tumhi ha offer draft karun re-engage karayla tayar aahat ka?
+----------------------------------------
+RATIONALE: The message includes verifiable numbers: 24 lapsed customers, 38 days, and a CTR of 2.2%, all from the trigger payload. However, it does not cite a specific source for the CTR baseline or offer a concrete offer amount. The voice is warm and practical, using Marathi (tumchya) and Hindi mix, which fits a salon's friendly, local tone. It avoids taboos and feels operator-to-operator. Uses the owner's name 'Anjali' and the salon's full name correctly. References actual data (24 lapsed customers, 38 days, CTR) from the trigger, honoring the language preference with Marathi/Hindi.
+
+================================================================================
+
+TRIGGER: trg_052_review_theme_emerged_m_033_lalit_restaura
+MERCHANT: m_033_lalit_restaurant_lucknow
+SCORE: 30/50
+BREAKDOWN: Spec:4, Cat:8, Merch:7, Dec:5, Eng:6, Pen:-0
+----------------------------------------
+MESSAGE:
+Lalit, Family Diner ke recent reviews mein ek positive theme aa raha hai—log aapki quality ko appreciate kar rahe hain. Yeh aapke 4.0+ rating ko aur strong bana raha hai. Kya main aapke liye ek reply draft kar doon jo naye customers ko yeh strength dikhaye?
+----------------------------------------
+RATIONALE: The message mentions 'recent reviews' and '4.0+ rating' but provides no verifiable numbers like exact review count, percentage of positive reviews, or specific quotes. The claim is vague without concrete data. The tone is warm and practical, fitting a restaurant operator. Using Hindi ('ke', 'aa raha hai') matches the merchant's language preference. However, the offer to draft a reply is slightly generic and could be more operator-to-operator. Uses owner name 'Lalit' and business name 'Family Diner' correctly. References their rating (4.0+) but does not use any actual data from the context (e.g., views, calls, ctr). The locality is ignored.
+
+================================================================================
+
+TRIGGER: trg_032_perf_dip_m_041_karan_gym_pune
+MERCHANT: m_041_karan_gym_pune
+SCORE: 37/50
+BREAKDOWN: Spec:7, Cat:8, Merch:9, Dec:6, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Karan, Iron Forge Fitness ke performance mein kuch movement nahi dikh raha hai—views 918 hain, calls 11, lekin CTR sirf 2.7% hai. Yeh signal hai ki log dekh toh rahe hain, par action nahi le rahe. Growth ke liye is gap ko close karna zaroori hai. Kya aap chahenge ki main is shift ka source analyze karke ek recovery plan suggest karun?
+----------------------------------------
+RATIONALE: The message includes verifiable numbers (918 views, 11 calls, 2.7% CTR) from the context, but lacks a specific date or time frame for the dip, and the source of the data is not cited. The energetic_disciplined voice fits a gym—direct, data-driven, and action-oriented. However, the phrase 'movement nahi dikh raha' is slightly informal for a gym owner; a more coaching tone like 'progress stalled' would be stronger. Uses the owner's name 'Karan' and the gym name 'Iron Forge Fitness' correctly, references actual performance data from context, and mixes Hindi/English as per language preference.
+
+================================================================================
+
+TRIGGER: trg_074_customer_lapsed_soft_m_050_komal_pharmaci
+MERCHANT: m_050_komal_pharmacie_bangalore
+SCORE: 24/50
+BREAKDOWN: Spec:3, Cat:7, Merch:5, Dec:4, Eng:5, Pen:-0
+----------------------------------------
+MESSAGE:
+Hi Ananya, Daily Care Medicos here. Aapke last visit ko kuch time ho gaya, toh humein laga aapko ek reminder dein. Regular check-ups se health better rehti hai. Kya aap kal ya parson subah 10am ya shaam 5pm aa sakti hain?
+----------------------------------------
+RATIONALE: The message mentions 'last visit ko kuch time ho gaya' but provides no verifiable facts like the actual date of last visit, number of months since, or any specific health metric. The proposed times (kal/parson subah 10am/shaam 5pm) are vague and not tied to any real schedule. The tone is trustworthy and precise, fitting a pharmacy. However, it uses a mix of Hindi and English without clear reason (customer language pref is English), and 'regular check-ups' is more clinical than pharmacy-specific (pharmacies focus on medication adherence, not check-ups). The message uses the merchant name 'Daily Care Medicos' and owner name is not used. It does not reference any actual merchant data (e.g., their performance metrics, locality JP Nagar, or any past interaction). The language mix doesn't honor the customer's English preference.
+
+================================================================================
+
+TRIGGER: trg_100_curious_ask_due_m_047_anil_pharmacie
+MERCHANT: m_047_anil_pharmacie_delhi
+SCORE: 37/50
+BREAKDOWN: Spec:7, Cat:8, Merch:9, Dec:6, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Hi Anil! Aapke pharmacy ko 3534 views aur 38 calls aa chuke hain, kaafi acchi response hai. Is week sabse zyada log kis product ya service ke baare mein pooch rahe hain? Batao, main usko ek Google post bana dunga.
+----------------------------------------
+RATIONALE: The message includes verifiable numbers (3534 views, 38 calls) from the context, but lacks a specific date or source citation for the data. The tone is trustworthy and precise, using Hindi naturally for a pharmacy owner, and avoids taboos. However, it could be more clinical or peer-to-peer to fully match the pharmacy category. Uses the owner's name 'Anil' and references actual performance data (views, calls) from the context, showing personalization to Healthwell Pharmacy.
+
+================================================================================
+
+TRIGGER: trg_025_dormancy_glamour
+MERCHANT: m_004_glamour_salon_pune
+SCORE: 40/50
+BREAKDOWN: Spec:8, Cat:9, Merch:9, Dec:7, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Hi Anjali, tumchya Glamour Lounge Spa & Salon cha profile update kela nahi 38 divas pasun. Listing la 1200 views yet ahet, pan fresh content asel tar tya views madhun adhik calls milu shaktat. Kasa vatla, ya week sathi ek quick update suggest karu?
+----------------------------------------
+RATIONALE: Uses verifiable numbers (38 days, 1200 views) from the trigger payload, but lacks a specific date or source citation for the profile update suggestion. Warm and practical tone fits a salon perfectly; uses Marathi/Hindi mix naturally and avoids taboos. Addresses owner by name (Anjali), references actual performance data (views), and honors language preference with Marathi/Hindi mix.
+
+================================================================================
+
+TRIGGER: trg_099_curious_ask_due_m_003_studio11_salon
+MERCHANT: m_003_studio11_salon_hyderabad
+SCORE: 37/50
+BREAKDOWN: Spec:7, Cat:8, Merch:9, Dec:6, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Hi Lakshmi! Quick check — what service or product has been most asked-for this week at Studio11 Family Salon? With 4980 views and 62 calls recently, I want to keep your momentum high. Tell me one item and I'll turn it into a Google post for you.
+----------------------------------------
+RATIONALE: The message includes verifiable numbers (4980 views, 62 calls) from the context, but the ask is vague ('most asked-for this week') without a specific date or source for that data. The warm, practical voice fits a salon well, and the offer to create a Google post is a helpful, operator-to-operator gesture. However, it could be slightly more conversational and less transactional. Uses the owner's name (Lakshmi) and references the salon's actual performance data (views, calls). No fabricated data, and language is simple English as preferred.
+
+================================================================================
+
+TRIGGER: trg_089_trial_followup_m_019_paras_salon_ba
+MERCHANT: m_019_paras_salon_bangalore
+SCORE: 24/50
+BREAKDOWN: Spec:2, Cat:8, Merch:6, Dec:3, Eng:5, Pen:-0
+----------------------------------------
+MESSAGE:
+Hi Ira, Paras Hair & Beauty here. Aapki last visit ke baad se abhi tak koi update nahi aaya, toh hum soch rahe the ki aapko next appointment ka reminder de dein. Aapke liye convenient time kya rahega?
+----------------------------------------
+RATIONALE: The message lacks any verifiable facts such as dates, times, or specific details about the last visit. It only vaguely references 'last visit' without any concrete information. The warm and practical voice fits a salon well, using a friendly tone and Hindi-English mix appropriate for the customer's language preference. However, it could be slightly more personalized to salon context. The message uses the merchant name 'Paras Hair & Beauty' and addresses the customer by name, but does not reference any actual merchant data (e.g., performance metrics or specific services) to personalize it further.
+
+================================================================================
+
+TRIGGER: trg_022_cde_webinar_dentists
+MERCHANT: m_001_drmeera_dentist_delhi
+SCORE: 41/50
+BREAKDOWN: Spec:8, Cat:9, Merch:9, Dec:8, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Dr. Meera, aapke clinic ko Lajpat Nagar mein 2410 views mile hain aur 18 calls aaye hain — yeh accha response hai. IDA Delhi ka ek free webinar hai "Digital Impressions — 2026 State of the Art" jo aapke practice ko aur upgrade kar sakta hai. Kya main aapke customers ke liye ek 2-line message draft kar doon?
+----------------------------------------
+RATIONALE: The message includes verifiable numbers (2410 views, 18 calls) and a specific webinar name with date reference (2026W17), but lacks a precise date/time for the webinar itself. Uses 'Dr.' prefix, peer-clinical tone ('practice ko upgrade'), and references a professional dental association (IDA) — perfectly aligned with dentist category and voice. Addresses Dr. Meera by name, references her clinic's actual performance data (views, calls), and uses Hindi-English mix matching her language preferences.
+
+================================================================================
+
+TRIGGER: trg_028_research_digest_m_024_salim_salon_ch
+MERCHANT: m_024_salim_salon_chennai
+SCORE: 41/50
+BREAKDOWN: Spec:8, Cat:9, Merch:10, Dec:7, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Salim, unga Studio Cuts OMR la 4802 views vandhurukku, aana calls 18 mattum dhaan. CTR 0.04% nu irukku, adha improve panna oru simple message draft pannikalaama?
+----------------------------------------
+RATIONALE: The message includes verifiable numbers (4802 views, 18 calls, 0.04% CTR) from the provided context, but lacks a source citation or date reference, making it slightly less concrete. The warm, practical voice fits a salon perfectly—friendly Tamil phrasing ('unga', 'vandhurukku') and a helpful tone without technical jargon, aligning with the category's expectations. Uses the owner's name (Salim), references the specific salon (Studio Cuts) and locality (OMR), and honors the language preference (Tamil) perfectly, with no fabricated data.
+
+================================================================================
+
+TRIGGER: trg_023_competitor_opened_dentist
+MERCHANT: m_001_drmeera_dentist_delhi
+SCORE: 41/50
+BREAKDOWN: Spec:8, Cat:9, Merch:9, Dec:8, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Dr. Meera, Smile Studio just 1.3km away ne Dental Cleaning ₹199 ka offer launch kiya hai. Aapke 2410 views aur 18 calls se clear hai ki patient interest hai, lekin abhi loyal patients ko hold karna zaroori hai. Kya main aapke top patients ke liye ek 'Loyalty Appreciation' WhatsApp draft kar doon?
+----------------------------------------
+RATIONALE: The message includes verifiable facts: competitor name (Smile Studio), distance (1.3km), their offer price (₹199), and the merchant's own metrics (2410 views, 18 calls). However, it does not cite a source for the competitor data or specify a date for the offer beyond the trigger payload. The voice is appropriately peer-clinical for a dentist, using 'Dr. Meera' and professional language like 'loyal patients' and 'patient interest'. It avoids taboos and maintains a clinical yet approachable tone. The message uses the merchant's name (Dr. Meera) and references their actual performance data (views, calls) from the context. It also respects the language preference by mixing English and Hindi naturally.
+
+================================================================================
+
+TRIGGER: trg_063_festival_upcoming_m_029_karim_restaura
+MERCHANT: m_029_karim_restaurant_chandigarh
+SCORE: 36/50
+BREAKDOWN: Spec:7, Cat:8, Merch:8, Dec:6, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Hi Karim, aapke Sector 8 ke Kabab Junction pe views toh 1711 aa rahe hain aur 10 calls bhi aaye, lekin upcoming festival ka time hai apne regular customers ko kuch special dene ka. Ek festive offer ke saath unki attention wapas grab kar sakte ho. Kya main aapke liye ek greetings post aur 10% 'Festive Flash' offer draft kar doon?
+----------------------------------------
+RATIONALE: The message includes verifiable numbers (1711 views, 10 calls) from the merchant's performance data, but the 'upcoming festival' is vague with no specific date or festival name, and the 10% offer is fabricated (not in context). The voice is warm and practical, fitting a restaurant operator-to-operator tone. However, 'grab kar sakte ho' is slightly informal for a restaurant context; a more direct 'can attract' would be better. Uses the owner's name 'Karim' and locality 'Sector 8' correctly, and references actual performance data. The bilingual mix (en/hi) matches the merchant's language preferences, but no mention of 'Kabab Junction' beyond the name.
+
+================================================================================
+
+TRIGGER: trg_061_festival_upcoming_m_032_sandeep_restau
+MERCHANT: m_032_sandeep_restaurant_chandigarh
+SCORE: 41/50
+BREAKDOWN: Spec:8, Cat:9, Merch:9, Dec:7, Eng:8, Pen:-0
+----------------------------------------
+MESSAGE:
+Hi Sandeep, Tandoor Treats ki 542 views hain lekin calls sirf 6, toh festive season aa raha hai, yeh moka hai apne regulars ko wapas bulane ka. Kya aap chahenge main ek festive greetings post aur 10% 'Festive Flash' offer draft kar doon?
+----------------------------------------
+RATIONALE: The message includes verifiable numbers (542 views, 6 calls) from the context, and proposes a specific 10% 'Festive Flash' offer, but lacks a concrete date or source for the festive season. The warm, busy, practical voice fits a restaurant well—direct, action-oriented, and operator-to-operator, with no taboos violated. Uses the merchant's name (Tandoor Treats) and owner's name (Sandeep) correctly, references actual performance data, and honors the Hindi language preference.
+
+================================================================================
+
+TRIGGER: trg_029_research_digest_m_048_komal_pharmaci
+MERCHANT: m_048_komal_pharmacie_bangalore
+SCORE: 37/50
+BREAKDOWN: Spec:8, Cat:7, Merch:9, Dec:6, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Komal, nimma Daily Care Medicos ge ee week 3834 views bandive, aadre calls matte 30 matra. CTR 0.017 ide, meaning nodidavru call maadoke interest torisilla. Ee gap na cover maadoke, nimma customers ge direct aagi engage aagbeku. Naanu ondu short message draft maadi kodi, neevu use maadodu?
+----------------------------------------
+RATIONALE: The message includes verifiable numbers (3834 views, 30 calls, CTR 0.017) from the merchant's performance data, but lacks source citation or dates. The numbers are concrete and specific. The tone is trustworthy and precise, fitting a pharmacy, but the message is more about generic engagement metrics rather than clinical or health-related advice. It avoids taboos but could be more aligned with pharmacy-specific concerns like health awareness. Uses the owner's name 'Komal' and the merchant name 'Daily Care Medicos' correctly, references their actual performance data (views, calls, CTR), and uses Kannada ('nimma', 'bandive') honoring their language preference.
+
+================================================================================
+
+TRIGGER: trg_015_winback_rashmi
+MERCHANT: m_007_powerhouse_gym_bangalore
+SCORE: 43/50
+BREAKDOWN: Spec:9, Cat:8, Merch:9, Dec:9, Eng:8, Pen:-0
+----------------------------------------
+MESSAGE:
+Hi Rashmi, PowerHouse Fitness here. We noticed it's been 57 days since your last visit—your weight loss journey was going strong for 5 months, and we don't want you to lose that momentum. Our 3 FREE Trial Classes are still active for you to jump back in. What time works best for you this week to come in?
+----------------------------------------
+RATIONALE: The message includes verifiable facts: 57 days since last visit, 5 months of previous membership, and 3 FREE Trial Classes. These are directly from the trigger payload and context, making it highly specific. The tone is energetic and disciplined, fitting a gym. It uses motivational language ('momentum') and a clear call to action, though it could be slightly more coaching-oriented for a gym context. The message uses the merchant name 'PowerHouse Fitness' and references the customer's actual data (57 days, 5 months). It honors the language preference (English) and is personalized to Rashmi.
+
+================================================================================
+
+TRIGGER: trg_065_festival_upcoming_m_049_mohit_pharmaci
+MERCHANT: m_049_mohit_pharmacie_chandigarh
+SCORE: 32/50
+BREAKDOWN: Spec:6, Cat:7, Merch:8, Dec:5, Eng:6, Pen:-0
+----------------------------------------
+MESSAGE:
+Hi Mohit, festival season aa raha hai aur aapki pharmacy ke 1168 views ke saath, yeh moka hai apne regular customers ko kuch special dene ka. Ek festive offer se unki loyalty aur bhi strong ho sakti hai. Kya main aapke liye ek 'Festive Flash' offer (10% off) aur greetings post draft kar doon?
+----------------------------------------
+RATIONALE: The message mentions a specific view count (1168) and a concrete offer (10% off), but lacks verifiable dates, source citations, or other hard numbers. The view count is from context, but the offer percentage is fabricated without supporting data. The tone is trustworthy and precise, fitting a pharmacy. However, the offer of '10% off' and 'greetings post' feels more retail than clinical; a pharmacy might better emphasize health-related seasonal advice or preventive care. Uses the owner's name (Mohit) and references actual view count (1168). Language mix (en/hi) matches preference. No fabricated merchant-specific data beyond the view count.
+
+================================================================================
+
+TRIGGER: trg_033_perf_dip_m_011_dr_sameer_dent
+MERCHANT: m_011_dr_sameer_dentist_chandigarh
+SCORE: 41/50
+BREAKDOWN: Spec:8, Cat:9, Merch:9, Dec:7, Eng:8, Pen:-0
+----------------------------------------
+MESSAGE:
+Dr. Sameer, Bright Smile Dental ne 5249 views toh liye, lekin calls sirf 10 aaye aur CTR bhi 0.04 hai. Yeh batata hai ki log aapki profile dekh rahe hain, par action nahi le rahe. Iska matlab aapka offer ya listing ka hook clear nahi hai. Kya aap chahenge ki main aapki current listing ko analyze karke ek simple recovery plan suggest karun?
+----------------------------------------
+RATIONALE: Uses verifiable numbers from context (5249 views, 10 calls, 0.04 CTR) without fabricating data. No dates or source citations, but concrete metrics are present. Excellent peer-clinical tone: addresses Dr. Sameer by title, uses Hindi naturally, avoids taboos, and frames problem as data-driven diagnosis rather than hype. Personalized with owner name 'Dr. Sameer', business name 'Bright Smile Dental', and locality 'Sector 11' implied. Uses Hindi as per language preference. No fabricated data.
+
+================================================================================
+
+TRIGGER: trg_007_bridal_followup_kavya
+MERCHANT: m_003_studio11_salon_hyderabad
+SCORE: 39/50
+BREAKDOWN: Spec:8, Cat:7, Merch:9, Dec:8, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Hi Kavya, Studio11 Family Salon here. Your big day on 8th Nov 2026 is 196 days away, and since your trial was done on 22nd March, ab skin prep program ka time aa gaya hai. Let us know your preferred time for the next visit, and we'll confirm it. Also, our Haircut @ ₹99 is still active. What time works best for you?
+----------------------------------------
+RATIONALE: The message includes verifiable facts: wedding date (8th Nov 2026), days to wedding (196), trial completion date (22nd March), and an active offer (Haircut @ ₹99). However, it does not cite a source for the skin prep program recommendation. The voice is warm and practical, fitting a salon. The mix of English and Hindi ('ab skin prep program ka time aa gaya hai') aligns with the merchant's language preferences. However, 'skin prep program' is slightly technical and could be more customer-friendly. The message uses the merchant's name (Studio11 Family Salon) and references the customer's name (Kavya) and actual data (wedding date, trial date, active offer). It does not fabricate any information.
+
+================================================================================
+
+TRIGGER: trg_067_recall_due_m_029_karim_restaura
+MERCHANT: m_029_karim_restaurant_chandigarh
+SCORE: 41/50
+BREAKDOWN: Spec:8, Cat:9, Merch:9, Dec:7, Eng:8, Pen:-0
+----------------------------------------
+MESSAGE:
+Karim bhai, Kabab Junction ke 1711 logon ne aapki profile dekhi hai lekin abhi tak koi offer active nahi hai jo unhe wapas bulaye. Ek simple offer ya combo deal daaloge toh ye log wapas aa sakte hain. Kya aap kal tak koi naya offer set karna chahenge?
+----------------------------------------
+RATIONALE: The message uses a verifiable number (1711 profile views) from the context, but lacks specific dates, prices, or source citations for the claim about returning customers. The warm, practical, operator-to-operator voice fits a restaurant perfectly, using 'Karim bhai' and simple Hindi that matches the merchant's language preference. Uses the owner's name (Karim) and references the merchant's actual performance data (1711 views), though it doesn't mention the locality or any specific offer history.
+
+================================================================================
+
+TRIGGER: trg_073_customer_lapsed_soft_m_048_komal_pharmaci
+MERCHANT: m_048_komal_pharmacie_bangalore
+SCORE: 22/50
+BREAKDOWN: Spec:2, Cat:7, Merch:6, Dec:3, Eng:4, Pen:-0
+----------------------------------------
+MESSAGE:
+Hi Aditya, Daily Care Medicos se baat kar rahe hain. Aapne kabhi kabhi humse medicine li thi, lekin kuch time se aapka contact nahi hua. Aapki health ke liye regular check-up aur medicine ka continuation important hai. Kya aapko koi nayi prescription ya medicine chahiye? Batao, hum aapke liye arrange kar denge.
+----------------------------------------
+RATIONALE: The message lacks any verifiable facts such as dates, counts, or specific medicine names; it only makes vague references like 'kabhi kabhi' and 'kuch time se' without concrete data. The tone is trustworthy and precise, fitting a pharmacy, and avoids taboos like 'guaranteed result' or '100% safe', but could be more clinical and less conversational. The message uses the merchant name 'Daily Care Medicos' and addresses the customer in Hindi (matching language preference), but does not reference any actual merchant data like past orders or offers.
+
+================================================================================
+
+TRIGGER: trg_086_trial_followup_m_004_glamour_salon_
+MERCHANT: m_004_glamour_salon_pune
+SCORE: 22/50
+BREAKDOWN: Spec:2, Cat:8, Merch:5, Dec:3, Eng:4, Pen:-0
+----------------------------------------
+MESSAGE:
+Hi Ananya, Glamour Lounge Spa & Salon here. Aapke last visit ke baad se time ho gaya hai, ab next follow-up ka perfect time hai. Aap apna preferred time batao, hum confirm kar denge. Aapko kab aana suitable rahega?
+----------------------------------------
+RATIONALE: The message lacks any verifiable facts such as dates, numbers, or specific references to the customer's last visit. It uses vague phrases like 'last visit ke baad se' and 'perfect time' without concrete details. The warm and practical voice fits a salon well, using a friendly tone and Hindi mix appropriate for the locality. However, it could be more personalized to the salon context. The message uses the merchant name 'Glamour Lounge Spa & Salon' and addresses the customer by name, but does not reference any actual merchant data (e.g., performance metrics, offers) or the owner Anjali.
+
+================================================================================
+
+TRIGGER: trg_041_milestone_reached_m_017_dr_tara_dentis
+MERCHANT: m_017_dr_tara_dentist_bangalore
+SCORE: 41/50
+BREAKDOWN: Spec:8, Cat:9, Merch:9, Dec:7, Eng:8, Pen:-0
+----------------------------------------
+MESSAGE:
+Hey Dr. Tara, congrats! Ninna profile 1981 views ge 12 calls bandide, CTR 4.1% — super consistency! Neevu 100 engagement milestone ge just 5 steps away. Idu new customers ge social proof thorsoke excellent opportunity. Want me to draft a 'Thank You' post for your page?
+----------------------------------------
+RATIONALE: The message includes verifiable numbers (1981 views, 12 calls, 4.1% CTR, 5 steps away) and references a specific milestone, but lacks a source citation or exact date for the data. The peer_clinical voice is well-executed with a professional yet approachable tone, using 'Dr.' prefix and clinical language ('consistency', 'social proof'), fitting dentists perfectly. Uses the owner's name 'Dr. Tara' correctly, references actual performance data from context, and includes Kannada ('Ninna') honoring the language preference, though no mention of locality or active offers.
+
+================================================================================
+

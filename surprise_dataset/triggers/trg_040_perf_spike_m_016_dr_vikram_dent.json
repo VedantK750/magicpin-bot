@@ -1,0 +1,15 @@
+{
+  "id": "trg_040_perf_spike_m_016_dr_vikram_dent",
+  "scope": "merchant",
+  "kind": "perf_spike",
+  "source": "internal",
+  "merchant_id": "m_016_dr_vikram_dentist_delhi",
+  "customer_id": null,
+  "payload": {
+    "placeholder": true,
+    "metric_or_topic": "perf_spike"
+  },
+  "urgency": 1,
+  "suppression_key": "perf_spike:m_016_dr_vikram_dentist_delhi:gen_40",
+  "expires_at": "2026-06-30T00:00:00Z"
+}

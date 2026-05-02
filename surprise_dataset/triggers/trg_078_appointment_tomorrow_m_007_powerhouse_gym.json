@@ -1,0 +1,15 @@
+{
+  "id": "trg_078_appointment_tomorrow_m_007_powerhouse_gym",
+  "scope": "customer",
+  "kind": "appointment_tomorrow",
+  "source": "internal",
+  "merchant_id": "m_007_powerhouse_gym_bangalore",
+  "customer_id": "c_009_arjun_for_m007",
+  "payload": {
+    "placeholder": true,
+    "metric_or_topic": "appointment_tomorrow"
+  },
+  "urgency": 2,
+  "suppression_key": "appointment_tomorrow:m_007_powerhouse_gym_bangalore:gen_78",
+  "expires_at": "2026-06-30T00:00:00Z"
+}

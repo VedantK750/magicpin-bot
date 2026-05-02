@@ -1,0 +1,15 @@
+{
+  "id": "trg_026_research_digest_m_024_salim_salon_ch",
+  "scope": "merchant",
+  "kind": "research_digest",
+  "source": "external",
+  "merchant_id": "m_024_salim_salon_chennai",
+  "customer_id": null,
+  "payload": {
+    "placeholder": true,
+    "metric_or_topic": "research_digest"
+  },
+  "urgency": 1,
+  "suppression_key": "research_digest:m_024_salim_salon_chennai:gen_26",
+  "expires_at": "2026-06-30T00:00:00Z"
+}

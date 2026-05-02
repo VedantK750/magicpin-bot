@@ -1,0 +1,52 @@
+{
+  "merchant_id": "m_041_karan_gym_pune",
+  "category_slug": "gyms",
+  "identity": {
+    "name": "Iron Forge Fitness",
+    "city": "Pune",
+    "locality": "Hadapsar",
+    "place_id": "ChIJ_HADAPSAR_GYMS_041",
+    "verified": true,
+    "languages": [
+      "en",
+      "hi"
+    ],
+    "owner_first_name": "Karan",
+    "established_year": 2021
+  },
+  "subscription": {
+    "status": "active",
+    "plan": "Pro",
+    "days_remaining": 79,
+    "days_since_expiry": null
+  },
+  "performance": {
+    "window_days": 30,
+    "views": 918,
+    "calls": 11,
+    "directions": 44,
+    "ctr": 0.027,
+    "leads": 9,
+    "delta_7d": {
+      "views_pct": -0.18,
+      "calls_pct": 0.08
+    }
+  },
+  "offers": [
+    {
+      "title": "Trial Class",
+      "price": "FREE",
+      "status": "active"
+    }
+  ],
+  "conversation_history": [],
+  "customer_aggregate": {
+    "total_unique_ytd": 1561
+  },
+  "signals": [],
+  "review_themes": [
+    "Great service",
+    "Prompt response",
+    "Value for money"
+  ]
+}

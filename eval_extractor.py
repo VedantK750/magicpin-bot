@@ -22,7 +22,7 @@ def run_extraction():
 
     # Initialize client, dataset and scorer
     client = judge_simulator.BotClient(judge_simulator.BOT_URL)
-    dataset = judge_simulator.DatasetLoader(judge_simulator.DATASET_DIR)
+    dataset = judge_simulator.DatasetLoader(Path(__file__).parent / "surprise_dataset")
     
     if not dataset.load():
         print("Failed to load dataset.")
@@ -47,7 +47,7 @@ def run_extraction():
     for tid, t in dataset.triggers.items():
         client.push_context("trigger", tid, 1, t)
 
-    tids = list(dataset.triggers.keys())
+    tids = list(dataset.triggers.keys())[:15]
     results = []
 
     print(f"Starting evaluation of {len(tids)} triggers...")

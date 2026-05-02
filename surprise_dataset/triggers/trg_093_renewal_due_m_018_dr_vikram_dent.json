@@ -1,0 +1,15 @@
+{
+  "id": "trg_093_renewal_due_m_018_dr_vikram_dent",
+  "scope": "merchant",
+  "kind": "renewal_due",
+  "source": "internal",
+  "merchant_id": "m_018_dr_vikram_dentist_delhi",
+  "customer_id": null,
+  "payload": {
+    "placeholder": true,
+    "metric_or_topic": "renewal_due"
+  },
+  "urgency": 4,
+  "suppression_key": "renewal_due:m_018_dr_vikram_dentist_delhi:gen_93",
+  "expires_at": "2026-06-30T00:00:00Z"
+}

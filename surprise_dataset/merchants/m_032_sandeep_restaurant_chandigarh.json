@@ -1,0 +1,52 @@
+{
+  "merchant_id": "m_032_sandeep_restaurant_chandigarh",
+  "category_slug": "restaurants",
+  "identity": {
+    "name": "Tandoor Treats",
+    "city": "Chandigarh",
+    "locality": "Sector 11",
+    "place_id": "ChIJ_SECTOR_11_RESTAURANTS_032",
+    "verified": true,
+    "languages": [
+      "en",
+      "hi"
+    ],
+    "owner_first_name": "Sandeep",
+    "established_year": 2011
+  },
+  "subscription": {
+    "status": "active",
+    "plan": "Pro",
+    "days_remaining": 136,
+    "days_since_expiry": null
+  },
+  "performance": {
+    "window_days": 30,
+    "views": 542,
+    "calls": 6,
+    "directions": 34,
+    "ctr": 0.05,
+    "leads": 5,
+    "delta_7d": {
+      "views_pct": 0.25,
+      "calls_pct": -0.02
+    }
+  },
+  "offers": [
+    {
+      "title": "Combo Deal",
+      "price": "\u20b9199",
+      "status": "active"
+    }
+  ],
+  "conversation_history": [],
+  "customer_aggregate": {
+    "total_unique_ytd": 717
+  },
+  "signals": [],
+  "review_themes": [
+    "Great service",
+    "Prompt response",
+    "Value for money"
+  ]
+}

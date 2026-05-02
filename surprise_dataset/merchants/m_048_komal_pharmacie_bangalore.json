@@ -1,0 +1,53 @@
+{
+  "merchant_id": "m_048_komal_pharmacie_bangalore",
+  "category_slug": "pharmacies",
+  "identity": {
+    "name": "Daily Care Medicos",
+    "city": "Bangalore",
+    "locality": "Marathahalli",
+    "place_id": "ChIJ_MARATHAHALLI_PHARMACIES_048",
+    "verified": true,
+    "languages": [
+      "en",
+      "hi",
+      "kn"
+    ],
+    "owner_first_name": "Komal",
+    "established_year": 2014
+  },
+  "subscription": {
+    "status": "active",
+    "plan": "Pro",
+    "days_remaining": 185,
+    "days_since_expiry": null
+  },
+  "performance": {
+    "window_days": 30,
+    "views": 3834,
+    "calls": 30,
+    "directions": 76,
+    "ctr": 0.017,
+    "leads": 0,
+    "delta_7d": {
+      "views_pct": -0.1,
+      "calls_pct": -0.09
+    }
+  },
+  "offers": [
+    {
+      "title": "Health Check",
+      "price": "FREE",
+      "status": "active"
+    }
+  ],
+  "conversation_history": [],
+  "customer_aggregate": {
+    "total_unique_ytd": 1872
+  },
+  "signals": [],
+  "review_themes": [
+    "Great service",
+    "Prompt response",
+    "Value for money"
+  ]
+}

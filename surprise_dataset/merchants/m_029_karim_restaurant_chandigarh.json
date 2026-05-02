@@ -1,0 +1,52 @@
+{
+  "merchant_id": "m_029_karim_restaurant_chandigarh",
+  "category_slug": "restaurants",
+  "identity": {
+    "name": "Kabab Junction",
+    "city": "Chandigarh",
+    "locality": "Sector 8",
+    "place_id": "ChIJ_SECTOR_8_RESTAURANTS_029",
+    "verified": false,
+    "languages": [
+      "en",
+      "hi"
+    ],
+    "owner_first_name": "Karim",
+    "established_year": 2014
+  },
+  "subscription": {
+    "status": "expired",
+    "plan": "Pro",
+    "days_remaining": 0,
+    "days_since_expiry": 61
+  },
+  "performance": {
+    "window_days": 30,
+    "views": 1711,
+    "calls": 10,
+    "directions": 34,
+    "ctr": 0.021,
+    "leads": 5,
+    "delta_7d": {
+      "views_pct": -0.06,
+      "calls_pct": 0.19
+    }
+  },
+  "offers": [
+    {
+      "title": "Combo Deal",
+      "price": "\u20b9199",
+      "status": "active"
+    }
+  ],
+  "conversation_history": [],
+  "customer_aggregate": {
+    "total_unique_ytd": 607
+  },
+  "signals": [],
+  "review_themes": [
+    "Great service",
+    "Prompt response",
+    "Value for money"
+  ]
+}

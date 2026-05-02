@@ -1,0 +1,15 @@
+{
+  "id": "trg_067_recall_due_m_029_karim_restaura",
+  "scope": "customer",
+  "kind": "recall_due",
+  "source": "internal",
+  "merchant_id": "m_029_karim_restaurant_chandigarh",
+  "customer_id": "c_113_kavya_for_m_029_karim_restaurant_chandigarh",
+  "payload": {
+    "placeholder": true,
+    "metric_or_topic": "recall_due"
+  },
+  "urgency": 3,
+  "suppression_key": "recall_due:m_029_karim_restaurant_chandigarh:gen_67",
+  "expires_at": "2026-06-30T00:00:00Z"
+}

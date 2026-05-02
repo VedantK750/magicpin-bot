@@ -1,0 +1,15 @@
+{
+  "id": "trg_090_trial_followup_m_031_sandeep_restau",
+  "scope": "customer",
+  "kind": "trial_followup",
+  "source": "internal",
+  "merchant_id": "m_031_sandeep_restaurant_jaipur",
+  "customer_id": "c_123_kavya_for_m_031_sandeep_restaurant_jaipur",
+  "payload": {
+    "placeholder": true,
+    "metric_or_topic": "trial_followup"
+  },
+  "urgency": 2,
+  "suppression_key": "trial_followup:m_031_sandeep_restaurant_jaipur:gen_90",
+  "expires_at": "2026-06-30T00:00:00Z"
+}

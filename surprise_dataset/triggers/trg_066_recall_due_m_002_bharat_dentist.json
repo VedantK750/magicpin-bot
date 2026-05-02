@@ -1,0 +1,15 @@
+{
+  "id": "trg_066_recall_due_m_002_bharat_dentist",
+  "scope": "customer",
+  "kind": "recall_due",
+  "source": "internal",
+  "merchant_id": "m_002_bharat_dentist_mumbai",
+  "customer_id": "c_020_aditya_for_m_002_bharat_dentist_mumbai",
+  "payload": {
+    "placeholder": true,
+    "metric_or_topic": "recall_due"
+  },
+  "urgency": 3,
+  "suppression_key": "recall_due:m_002_bharat_dentist_mumbai:gen_66",
+  "expires_at": "2026-06-30T00:00:00Z"
+}

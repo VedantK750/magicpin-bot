@@ -1,0 +1,52 @@
+{
+  "merchant_id": "m_042_manisha_gym_jaipur",
+  "category_slug": "gyms",
+  "identity": {
+    "name": "Vyayam Yoga",
+    "city": "Jaipur",
+    "locality": "Sodala",
+    "place_id": "ChIJ_SODALA_GYMS_042",
+    "verified": false,
+    "languages": [
+      "en",
+      "hi"
+    ],
+    "owner_first_name": "Manisha",
+    "established_year": 2023
+  },
+  "subscription": {
+    "status": "active",
+    "plan": "Pro",
+    "days_remaining": 81,
+    "days_since_expiry": null
+  },
+  "performance": {
+    "window_days": 30,
+    "views": 1557,
+    "calls": 18,
+    "directions": 37,
+    "ctr": 0.034,
+    "leads": 11,
+    "delta_7d": {
+      "views_pct": -0.26,
+      "calls_pct": -0.21
+    }
+  },
+  "offers": [
+    {
+      "title": "Trial Class",
+      "price": "FREE",
+      "status": "active"
+    }
+  ],
+  "conversation_history": [],
+  "customer_aggregate": {
+    "total_unique_ytd": 511
+  },
+  "signals": [],
+  "review_themes": [
+    "Great service",
+    "Prompt response",
+    "Value for money"
+  ]
+}

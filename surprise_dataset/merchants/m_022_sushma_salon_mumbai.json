@@ -1,0 +1,53 @@
+{
+  "merchant_id": "m_022_sushma_salon_mumbai",
+  "category_slug": "salons",
+  "identity": {
+    "name": "The Beauty Bar",
+    "city": "Mumbai",
+    "locality": "Juhu",
+    "place_id": "ChIJ_JUHU_SALONS_022",
+    "verified": false,
+    "languages": [
+      "en",
+      "hi",
+      "mr"
+    ],
+    "owner_first_name": "Sushma",
+    "established_year": 2011
+  },
+  "subscription": {
+    "status": "expired",
+    "plan": "Pro",
+    "days_remaining": 0,
+    "days_since_expiry": 56
+  },
+  "performance": {
+    "window_days": 30,
+    "views": 4413,
+    "calls": 6,
+    "directions": 36,
+    "ctr": 0.045,
+    "leads": 5,
+    "delta_7d": {
+      "views_pct": 0.28,
+      "calls_pct": 0.2
+    }
+  },
+  "offers": [
+    {
+      "title": "Haircut",
+      "price": "\u20b999",
+      "status": "active"
+    }
+  ],
+  "conversation_history": [],
+  "customer_aggregate": {
+    "total_unique_ytd": 1934
+  },
+  "signals": [],
+  "review_themes": [
+    "Great service",
+    "Prompt response",
+    "Value for money"
+  ]
+}

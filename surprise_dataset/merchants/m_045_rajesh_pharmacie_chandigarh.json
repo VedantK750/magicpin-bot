@@ -1,0 +1,52 @@
+{
+  "merchant_id": "m_045_rajesh_pharmacie_chandigarh",
+  "category_slug": "pharmacies",
+  "identity": {
+    "name": "MedPlus Express",
+    "city": "Chandigarh",
+    "locality": "Sector 22",
+    "place_id": "ChIJ_SECTOR_22_PHARMACIES_045",
+    "verified": true,
+    "languages": [
+      "en",
+      "hi"
+    ],
+    "owner_first_name": "Rajesh",
+    "established_year": 2013
+  },
+  "subscription": {
+    "status": "trial",
+    "plan": "Trial",
+    "days_remaining": 2,
+    "days_since_expiry": null
+  },
+  "performance": {
+    "window_days": 30,
+    "views": 5123,
+    "calls": 2,
+    "directions": 33,
+    "ctr": 0.037,
+    "leads": 1,
+    "delta_7d": {
+      "views_pct": 0.04,
+      "calls_pct": -0.23
+    }
+  },
+  "offers": [
+    {
+      "title": "Health Check",
+      "price": "FREE",
+      "status": "active"
+    }
+  ],
+  "conversation_history": [],
+  "customer_aggregate": {
+    "total_unique_ytd": 839
+  },
+  "signals": [],
+  "review_themes": [
+    "Great service",
+    "Prompt response",
+    "Value for money"
+  ]
+}

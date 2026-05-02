@@ -1,0 +1,15 @@
+{
+  "id": "trg_060_competitor_opened_m_018_dr_vikram_dent",
+  "scope": "merchant",
+  "kind": "competitor_opened",
+  "source": "external",
+  "merchant_id": "m_018_dr_vikram_dentist_delhi",
+  "customer_id": null,
+  "payload": {
+    "placeholder": true,
+    "metric_or_topic": "competitor_opened"
+  },
+  "urgency": 2,
+  "suppression_key": "competitor_opened:m_018_dr_vikram_dentist_delhi:gen_60",
+  "expires_at": "2026-06-30T00:00:00Z"
+}

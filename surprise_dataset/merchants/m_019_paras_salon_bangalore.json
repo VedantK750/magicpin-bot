@@ -1,0 +1,53 @@
+{
+  "merchant_id": "m_019_paras_salon_bangalore",
+  "category_slug": "salons",
+  "identity": {
+    "name": "Paras Hair & Beauty",
+    "city": "Bangalore",
+    "locality": "JP Nagar",
+    "place_id": "ChIJ_JP_NAGAR_SALONS_019",
+    "verified": false,
+    "languages": [
+      "en",
+      "hi",
+      "kn"
+    ],
+    "owner_first_name": "Paras",
+    "established_year": 2011
+  },
+  "subscription": {
+    "status": "active",
+    "plan": "Pro",
+    "days_remaining": 73,
+    "days_since_expiry": null
+  },
+  "performance": {
+    "window_days": 30,
+    "views": 5883,
+    "calls": 53,
+    "directions": 135,
+    "ctr": 0.022,
+    "leads": 52,
+    "delta_7d": {
+      "views_pct": 0.24,
+      "calls_pct": 0.26
+    }
+  },
+  "offers": [
+    {
+      "title": "Haircut",
+      "price": "\u20b999",
+      "status": "active"
+    }
+  ],
+  "conversation_history": [],
+  "customer_aggregate": {
+    "total_unique_ytd": 1615
+  },
+  "signals": [],
+  "review_themes": [
+    "Great service",
+    "Prompt response",
+    "Value for money"
+  ]
+}

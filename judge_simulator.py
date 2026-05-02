@@ -365,9 +365,9 @@ class DatasetLoader:
                     self.categories[data.get("slug", f.stem)] = data
 
             for name, container, key in [
-                ("merchants_seed.json", "merchants", "merchant_id"),
-                ("customers_seed.json", "customers", "customer_id"),
-                ("triggers_seed.json", "triggers", "id")
+                ("merchant_seed.json", "merchants", "merchant_id"),
+                ("customer_seed.json", "customers", "customer_id"),
+                ("trigger_seed.json", "triggers", "id")
             ]:
                 path = self.dataset_dir / name
                 if path.exists():
@@ -422,7 +422,7 @@ class BotClient:
         })
 
     def tick(self, triggers):
-        return self._request("POST", "/v1/tick", 15, {
+        return self._request("POST", "/v1/tick", 60, {
             "now": datetime.utcnow().isoformat() + "Z", "available_triggers": triggers
         })
 
@@ -844,7 +844,7 @@ class JudgeSimulator:
         score = self.scorer.score(action, category, merchant, trigger, customer)
         self.all_scores.append(score)
 
-        body = action.get("body", "")[:50]
+        body = action.get("body", "")
         print(f"\n{Colors.CYAN}Message:{Colors.RESET} \"{body}...\"")
 
         print_score_bar("Specificity", score.specificity)
@@ -953,6 +953,7 @@ def main():
 
     # Run the judge
     judge = JudgeSimulator(llm)
+    # Process only the first 5 batches (25 triggers)
     success = judge.run(TEST_SCENARIO)
 
     sys.exit(0 if success else 1)

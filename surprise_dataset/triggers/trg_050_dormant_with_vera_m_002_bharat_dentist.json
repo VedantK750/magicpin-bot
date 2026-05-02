@@ -1,0 +1,15 @@
+{
+  "id": "trg_050_dormant_with_vera_m_002_bharat_dentist",
+  "scope": "merchant",
+  "kind": "dormant_with_vera",
+  "source": "internal",
+  "merchant_id": "m_002_bharat_dentist_mumbai",
+  "customer_id": null,
+  "payload": {
+    "placeholder": true,
+    "metric_or_topic": "dormant_with_vera"
+  },
+  "urgency": 2,
+  "suppression_key": "dormant_with_vera:m_002_bharat_dentist_mumbai:gen_50",
+  "expires_at": "2026-06-30T00:00:00Z"
+}

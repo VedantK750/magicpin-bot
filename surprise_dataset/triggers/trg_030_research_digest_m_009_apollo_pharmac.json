@@ -1,0 +1,15 @@
+{
+  "id": "trg_030_research_digest_m_009_apollo_pharmac",
+  "scope": "merchant",
+  "kind": "research_digest",
+  "source": "external",
+  "merchant_id": "m_009_apollo_pharmacy_jaipur",
+  "customer_id": null,
+  "payload": {
+    "placeholder": true,
+    "metric_or_topic": "research_digest"
+  },
+  "urgency": 1,
+  "suppression_key": "research_digest:m_009_apollo_pharmacy_jaipur:gen_30",
+  "expires_at": "2026-06-30T00:00:00Z"
+}

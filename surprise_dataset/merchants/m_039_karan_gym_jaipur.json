@@ -1,0 +1,52 @@
+{
+  "merchant_id": "m_039_karan_gym_jaipur",
+  "category_slug": "gyms",
+  "identity": {
+    "name": "Iron Forge Fitness",
+    "city": "Jaipur",
+    "locality": "Jhotwara",
+    "place_id": "ChIJ_JHOTWARA_GYMS_039",
+    "verified": true,
+    "languages": [
+      "en",
+      "hi"
+    ],
+    "owner_first_name": "Karan",
+    "established_year": 2020
+  },
+  "subscription": {
+    "status": "active",
+    "plan": "Pro",
+    "days_remaining": 143,
+    "days_since_expiry": null
+  },
+  "performance": {
+    "window_days": 30,
+    "views": 1636,
+    "calls": 15,
+    "directions": 59,
+    "ctr": 0.035,
+    "leads": 3,
+    "delta_7d": {
+      "views_pct": -0.09,
+      "calls_pct": 0.27
+    }
+  },
+  "offers": [
+    {
+      "title": "Trial Class",
+      "price": "FREE",
+      "status": "active"
+    }
+  ],
+  "conversation_history": [],
+  "customer_aggregate": {
+    "total_unique_ytd": 1582
+  },
+  "signals": [],
+  "review_themes": [
+    "Great service",
+    "Prompt response",
+    "Value for money"
+  ]
+}

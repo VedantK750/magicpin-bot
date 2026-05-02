@@ -1,0 +1,15 @@
+{
+  "id": "trg_081_chronic_refill_due_m_045_rajesh_pharmac",
+  "scope": "customer",
+  "kind": "chronic_refill_due",
+  "source": "internal",
+  "merchant_id": "m_045_rajesh_pharmacie_chandigarh",
+  "customer_id": "c_177_arjun_for_m_045_rajesh_pharmacie_chandigarh",
+  "payload": {
+    "placeholder": true,
+    "metric_or_topic": "chronic_refill_due"
+  },
+  "urgency": 2,
+  "suppression_key": "chronic_refill_due:m_045_rajesh_pharmacie_chandigarh:gen_81",
+  "expires_at": "2026-06-30T00:00:00Z"
+}

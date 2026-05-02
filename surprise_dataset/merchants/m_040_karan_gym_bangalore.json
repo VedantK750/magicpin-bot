@@ -1,0 +1,53 @@
+{
+  "merchant_id": "m_040_karan_gym_bangalore",
+  "category_slug": "gyms",
+  "identity": {
+    "name": "Iron Forge Fitness",
+    "city": "Bangalore",
+    "locality": "BTM Layout",
+    "place_id": "ChIJ_BTM_LAYOUT_GYMS_040",
+    "verified": true,
+    "languages": [
+      "en",
+      "hi",
+      "kn"
+    ],
+    "owner_first_name": "Karan",
+    "established_year": 2017
+  },
+  "subscription": {
+    "status": "active",
+    "plan": "Pro",
+    "days_remaining": 199,
+    "days_since_expiry": null
+  },
+  "performance": {
+    "window_days": 30,
+    "views": 5633,
+    "calls": 70,
+    "directions": 152,
+    "ctr": 0.048,
+    "leads": 53,
+    "delta_7d": {
+      "views_pct": -0.14,
+      "calls_pct": 0.13
+    }
+  },
+  "offers": [
+    {
+      "title": "Trial Class",
+      "price": "FREE",
+      "status": "active"
+    }
+  ],
+  "conversation_history": [],
+  "customer_aggregate": {
+    "total_unique_ytd": 1834
+  },
+  "signals": [],
+  "review_themes": [
+    "Great service",
+    "Prompt response",
+    "Value for money"
+  ]
+}

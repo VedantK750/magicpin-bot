@@ -1,0 +1,31 @@
+EVALUATION RUN - 2026-05-02T00:01:53.808802
+================================================================================
+
+TRIGGER: trg_001_research_digest_dentists
+MERCHANT: m_001_drmeera_dentist_delhi
+SCORE: 39/50
+BREAKDOWN: Spec:8, Cat:9, Merch:8, Dec:7, Eng:7, Pen:-0
+----------------------------------------
+MESSAGE:
+Dr. Meera, your clinic is building real momentum. Over 2,400 people checked you out in the last 30 days, and 9 of them became leads—that’s a solid conversion story. What’s even better? Your profile views jumped 18% just this past week, so the interest is accelerating.
+
+Your ₹299 cleaning offer is clearly the hook that’s working. The smartest move now is to amplify it—add a simple 'Limited Spots' note to nudge those browsers into bookers, and push it front and center on your profile. The data says people are looking; let’s make sure they act.
+
+Ready to update the offer and test this?
+----------------------------------------
+RATIONALE: The message includes verifiable numbers (2,400 views, 9 leads, 18% jump, ₹299 price) and a time frame (last 30 days, past week), but does not cite a specific source for the 18% increase or the lead count, and the '9 leads' is not directly in the provided context (only calls=18). The voice is appropriately clinical and peer-to-peer, using 'Dr. Meera' and professional language like 'conversion story' and 'amplify', fitting a dentist category well without violating taboos. Uses the owner's name 'Dr. Meera' correctly and references the active offer (₹299 cleaning) and performance data (views, calls), but the lead count (9) is fabricated from the calls data (18 calls), which is a minor inaccuracy.
+
+================================================================================
+
+TRIGGER: trg_021_unverified_gbp_sunrise
+MERCHANT: m_010_sunrisepharm_pharmacy_lucknow
+SCORE: 41/50
+BREAKDOWN: Spec:8, Cat:9, Merch:9, Dec:7, Eng:8, Pen:-0
+----------------------------------------
+MESSAGE:
+Vikas, your Sunrise Medicos listing is currently unverified, and that’s directly costing you leads. With 720 views but only 8 leads and 14 calls, the trust gap is real—customers in Gomti Nagar are likely choosing verified competitors over you. The data shows a potential 30% uplift in performance once verified, but this window closes on May 30, 2026. Every day you delay, you’re losing that edge and letting those leads slip away. Let’s get this sorted now to stop the loss—what’s the best time for you to start the verification process?
+----------------------------------------
+RATIONALE: The message includes verifiable numbers (720 views, 8 leads, 14 calls, 30% uplift) and a specific deadline (May 30, 2026), but the '8 leads' figure is fabricated—the context only provides views, calls, and CTR, not leads. This fabrication incurs a -2 penalty, reducing from a potential 10 to 8. The tone is trustworthy and precise, fitting a pharmacy well. It avoids taboos like 'guaranteed result' and uses data-driven reasoning. The only minor issue is the slightly urgent phrasing ('losing that edge') which could be more clinical, but overall excellent. Uses the owner's name 'Vikas' and the merchant name 'Sunrise Medicos' correctly, references the locality 'Gomti Nagar', and honors the language preference (English). However, it does not use any Hindi phrases despite the bilingual preference, missing a small personalization opportunity.
+
+================================================================================
+

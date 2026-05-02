@@ -1,0 +1,28 @@
+{
+  "customer_id": "c_059_ishaan_for_m_015_dr_priya_dentist_chennai",
+  "merchant_id": "m_015_dr_priya_dentist_chennai",
+  "identity": {
+    "name": "Ishaan",
+    "phone_redacted": "<phone>",
+    "language_pref": "en",
+    "age_band": "40-50"
+  },
+  "relationship": {
+    "first_visit": "2025-09-01",
+    "last_visit": "2026-04-01",
+    "visits_total": 1,
+    "services_received": [],
+    "lifetime_value": 925
+  },
+  "state": "churned",
+  "preferences": {
+    "channel": "whatsapp",
+    "reminder_opt_in": true
+  },
+  "consent": {
+    "opted_in_at": "2025-09-01",
+    "scope": [
+      "promotional_offers"
+    ]
+  }
+}

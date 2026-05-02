@@ -1,0 +1,53 @@
+{
+  "merchant_id": "m_021_karim_salon_hyderabad",
+  "category_slug": "salons",
+  "identity": {
+    "name": "Karim's Salon",
+    "city": "Hyderabad",
+    "locality": "Kondapur",
+    "place_id": "ChIJ_KONDAPUR_SALONS_021",
+    "verified": true,
+    "languages": [
+      "en",
+      "hi",
+      "te"
+    ],
+    "owner_first_name": "Karim",
+    "established_year": 2015
+  },
+  "subscription": {
+    "status": "active",
+    "plan": "Pro",
+    "days_remaining": 146,
+    "days_since_expiry": null
+  },
+  "performance": {
+    "window_days": 30,
+    "views": 2517,
+    "calls": 9,
+    "directions": 44,
+    "ctr": 0.049,
+    "leads": 4,
+    "delta_7d": {
+      "views_pct": 0.23,
+      "calls_pct": -0.25
+    }
+  },
+  "offers": [
+    {
+      "title": "Haircut",
+      "price": "\u20b999",
+      "status": "active"
+    }
+  ],
+  "conversation_history": [],
+  "customer_aggregate": {
+    "total_unique_ytd": 1614
+  },
+  "signals": [],
+  "review_themes": [
+    "Great service",
+    "Prompt response",
+    "Value for money"
+  ]
+}

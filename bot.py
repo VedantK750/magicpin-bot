@@ -562,14 +562,14 @@ def _compose_perf_like(merchant: dict[str, Any], trigger: dict[str, Any]) -> tup
     owner = owner_name(merchant)
     biz = merchant_name(merchant)
     metric = payload.get("metric", "engagement")
-    delta_pct = payload.get("delta_pct")
+    delta_pct = payload.get("delta_pct") or 0.0
     
     perf = merchant.get("performance", {}) or {}
     window = payload.get("window", perf.get("window_days", 7))
     current_val = perf.get(metric, "")
 
     body = (
-        f"{owner}, quick signal for {biz}: your {metric} are {'up' if delta_pct > 0 else 'down'} {pct(abs(float(delta_pct)))} over the last {window} days. "
+        f"{owner}, quick signal for {biz}: your {metric} are {'up' if float(delta_pct) >= 0 else 'down'} {pct(abs(float(delta_pct)))} over the last {window} days. "
         f"(Exact current value: {current_val}). (Source: magicpin performance analytics). "
         "Want me to analyze the source of this shift and suggest a recovery plan?"
     )
@@ -1026,18 +1026,22 @@ def compose(
         
         category_context_str = "\n".join(cat_insights)
 
-        llm_body, llm_rationale = llm_composer.draft_message(
-            category=category,
-            merchant=merchant,
-            trigger=trigger,
-            rule_body=body,
-            language_pref=pref,
-            scope=scope,
-            category_context=category_context_str,
-            hidden_facts=hidden_facts
-        )
-        body = llm_body
-        rationale += f" | {llm_rationale}"
+        try:
+            llm_body, llm_rationale = llm_composer.draft_message(
+                category=category,
+                merchant=merchant,
+                trigger=trigger,
+                rule_body=body,
+                language_pref=pref,
+                scope=scope,
+                category_context=category_context_str,
+                hidden_facts=hidden_facts,
+                customer=customer
+            )
+            body = llm_body
+            rationale += f" | {llm_rationale}"
+        except Exception as e:
+            rationale += f" | LLM Exception: {str(e)}"
 
     safe = safe_body_or_none(body)
     if not safe:
@@ -1311,12 +1315,12 @@ async def reply(body: ReplyBody):
             out_body = "Looks like an auto-reply. When the owner is available, reply YES and I will continue from here."
             out_cta = "binary_yes_no"
             out_rationale = "Detected canned auto-reply; policy selected one owner-directed nudge on first occurrence."
+        elif conv.auto_reply_count >= 3:
+            _close_conversation(conv)
+            return {"action": "end", "rationale": "Auto-reply repeated 3 times with no engagement; ending conversation."}
         elif conv.auto_reply_count == 2:
             wait_seconds = env_int("AUTO_REPLY_WAIT_SECONDS", 14400)
             return {"action": "wait", "wait_seconds": max(300, wait_seconds), "rationale": "Repeated auto-reply; backing off before retry."}
-        else:
-            _close_conversation(conv)
-            return {"action": "end", "rationale": "Auto-reply repeated 3 times with no engagement; ending conversation."}
 
     else:
         # Any non-auto inbound is meaningful engagement

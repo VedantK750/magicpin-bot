@@ -1,0 +1,52 @@
+{
+  "merchant_id": "m_035_akash_gym_pune",
+  "category_slug": "gyms",
+  "identity": {
+    "name": "Fit Republic",
+    "city": "Pune",
+    "locality": "Pimpri",
+    "place_id": "ChIJ_PIMPRI_GYMS_035",
+    "verified": false,
+    "languages": [
+      "en",
+      "hi"
+    ],
+    "owner_first_name": "Akash",
+    "established_year": 2012
+  },
+  "subscription": {
+    "status": "active",
+    "plan": "Pro",
+    "days_remaining": 198,
+    "days_since_expiry": null
+  },
+  "performance": {
+    "window_days": 30,
+    "views": 5177,
+    "calls": 40,
+    "directions": 84,
+    "ctr": 0.044,
+    "leads": 1,
+    "delta_7d": {
+      "views_pct": 0.02,
+      "calls_pct": -0.19
+    }
+  },
+  "offers": [
+    {
+      "title": "Trial Class",
+      "price": "FREE",
+      "status": "active"
+    }
+  ],
+  "conversation_history": [],
+  "customer_aggregate": {
+    "total_unique_ytd": 1151
+  },
+  "signals": [],
+  "review_themes": [
+    "Great service",
+    "Prompt response",
+    "Value for money"
+  ]
+}

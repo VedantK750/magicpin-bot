@@ -1,0 +1,52 @@
+{
+  "merchant_id": "m_037_sneha_gym_ahmedabad",
+  "category_slug": "gyms",
+  "identity": {
+    "name": "Pulse Studio",
+    "city": "Ahmedabad",
+    "locality": "Maninagar",
+    "place_id": "ChIJ_MANINAGAR_GYMS_037",
+    "verified": false,
+    "languages": [
+      "en",
+      "hi"
+    ],
+    "owner_first_name": "Sneha",
+    "established_year": 2021
+  },
+  "subscription": {
+    "status": "active",
+    "plan": "Pro",
+    "days_remaining": 32,
+    "days_since_expiry": null
+  },
+  "performance": {
+    "window_days": 30,
+    "views": 5953,
+    "calls": 5,
+    "directions": 15,
+    "ctr": 0.053,
+    "leads": 1,
+    "delta_7d": {
+      "views_pct": -0.07,
+      "calls_pct": -0.01
+    }
+  },
+  "offers": [
+    {
+      "title": "Trial Class",
+      "price": "FREE",
+      "status": "active"
+    }
+  ],
+  "conversation_history": [],
+  "customer_aggregate": {
+    "total_unique_ytd": 711
+  },
+  "signals": [],
+  "review_themes": [
+    "Great service",
+    "Prompt response",
+    "Value for money"
+  ]
+}
