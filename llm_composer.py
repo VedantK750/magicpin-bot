@@ -2,13 +2,42 @@ import json
 import re
 import time
 import os
+import concurrent.futures
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple, Literal
 from urllib import request as urlrequest, error as urlerror
 
 # API Configuration
-LLM_API_KEY = "sk-aa7ab0f6091e4f238bc5fc1d6f4ed313"
+LLM_API_KEY = os.getenv("LLM_API_KEY")
 LLM_MODEL = "deepseek-chat"
-TIMEOUT_LLM = 20 # Leave room for network overhead (30s total)
+TIMEOUT_LLM = 25 
+
+@dataclass
+class ComposerState:
+    # Raw Context
+    category: Dict[str, Any]
+    merchant: Dict[str, Any]
+    trigger: Optional[Dict[str, Any]]
+    customer: Optional[Dict[str, Any]]
+    
+    # Derived Context
+    language_pref: str
+    scope: Literal["merchant", "customer"]
+    history: List[Dict[str, str]] = field(default_factory=list)
+    latest_message: str = ""
+    policy_intent: str = ""
+    rule_body: str = ""
+    
+    # Agent Outputs
+    dossier: str = ""
+    strategy: str = ""
+    draft: str = ""
+    critique: str = ""
+    validation_passed: bool = False
+    
+    # Metadata
+    total_latency: float = 0.0
+    iterations: int = 0
 
 class DeepSeekProvider:
     def __init__(self, api_key: str, model: str):
@@ -27,7 +56,7 @@ class DeepSeekProvider:
                 "model": self.model, 
                 "messages": messages,
                 "temperature": 0.1,
-                "max_tokens": 600
+                "max_tokens": 1000
             }).encode("utf-8"),
             headers={
                 "Authorization": f"Bearer {self.api_key}", 
@@ -40,10 +69,14 @@ class DeepSeekProvider:
 
 def _get_mix_lang(pref: str) -> str:
     pref = pref.lower()
-    lang_map = {"hi": "Hindi", "te": "Telugu", "ta": "Tamil", "kn": "Kannada", "mr": "Marathi", "bn": "Bengali", "gu": "Gujarati", "pa": "Punjabi", "ml": "Malayalam"}
+    lang_map = {
+        "hi": "Hindi", "te": "Telugu", "ta": "Tamil", "kn": "Kannada", 
+        "mr": "Marathi", "bn": "Bengali", "gu": "Gujarati", "pa": "Punjabi", 
+        "ml": "Malayalam", "or": "Odia", "as": "Assamese"
+    }
     for code, name in lang_map.items():
         if code in pref: return name
-    return "Hindi"
+    return "English"
 
 def draft_message(
     category: Dict[str, Any],
@@ -65,6 +98,9 @@ def draft_message(
         owner = f"Dr. {owner}"
     
     mix_lang = _get_mix_lang(language_pref)
+    lang_instruction = f"MANDATORY CODE-MIXING: Use a natural mix of {mix_lang} and English in Roman script."
+    if mix_lang == "English":
+        lang_instruction = "LANGUAGE: Use clear, professional English."
     
     # Context summary for the LLM to prevent hallucination
     active_offers = [f"{o.get('title')} (@ {o.get('price')})" for o in merchant.get("offers", []) if o.get("status") == "active"]
@@ -94,7 +130,7 @@ STRICT CONSTRAINTS (VIOLATION = FAILURE):
 3. TERMINAL HOOK RULE: The Call to Action (CTA) must be the ABSOLUTE FINAL SENTENCE. No sign-offs like 'Regards' or 'Vera'.
 4. NO FABRICATION: Use ONLY facts provided. Cite the exact [Source] if provided in Relevant Insight.
 5. MANDATORY OFFER ANCHORING: If Active Offers exist, you MUST connect the insight/problem to the offer as the solution.
-6. MANDATORY CODE-MIXING: Use a natural mix of {mix_lang} and English in Roman script.
+6. {lang_instruction}
 7. SINGLE OBJECTIVE: Ask exactly ONE question or give one clear directive at the end.
 8. CATEGORY VOICE & STRATEGY: 
    - Dentists/Pharmacies: Peer-clinical, precise. NEVER suggest "Loyalty", "Marketing", or "Discounts". Frame actions as "Patient Care", "Clinical Standards", or "Health Checkups".
@@ -136,6 +172,7 @@ Write the final WhatsApp message body now. NO META-TALK."""
         return rule_body, f"Error: {str(e)}"
 
 def analyze_reply_context(history: List[Dict[str, str]], latest_message: str) -> Optional[Dict[str, str]]:
+    provider = DeepSeekProvider(LLM_API_KEY, LLM_MODEL)
     history_str = "\n".join([f"{h['role'].upper()}: {h['msg']}" for h in history[-3:]])
     
     system_prompt = """You are a conversational analyzer for a WhatsApp business bot.
@@ -146,7 +183,7 @@ JSON SCHEMA:
 {
   "hostility": "none" | "medium_frustration" | "high_hostile" | "hard_stop" | "auto_reply",
   "intent": "qualification" | "action_commitment" | "off_topic",
-  "language": "en" | "hi" | "te" | "ta" | "kn" | "mr" | "bn" | "gu" | "pa" | "ml" 
+  "language": "en" | "hi" | "te" | "ta" | "kn" | "mr" | "bn" | "gu" | "pa" | "ml" | "or" | "as"
 }
 
 LANGUAGE DETECTION RULES:
@@ -211,8 +248,12 @@ def respond(
     mix_lang = _get_mix_lang(language_pref)
     history_str = "\n".join([f"{h['role'].upper()}: {h['msg']}" for h in history[-3:]])
     
+    lang_instruction = f"Natural {mix_lang}-English mix."
+    if mix_lang == "English":
+        lang_instruction = "Use clear, professional English."
+
     system_prompt = f"""You are Vera, an AI peer for {merchant.get('identity', {}).get('name')}.
-Natural {mix_lang}-English mix. Policy: {policy_intent}.
+{lang_instruction} Policy: {policy_intent}.
 Rules: No preamble, No sign-offs, No repetition. Max 60 words."""
 
     user_prompt = f"HISTORY:\n{history_str}\n\nUSER: {latest_message}\n\nSuggested response: {rule_body}"
