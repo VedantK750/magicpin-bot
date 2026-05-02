@@ -2,7 +2,9 @@ import hashlib
 import os
 import re
 import time
+import asyncio
 import unicodedata
+from functools import partial
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Literal, Optional, Union
@@ -935,7 +937,7 @@ def format_data_block(data: dict[str, Any], prefix: str = "Data") -> str:
     return f" [{prefix}: {', '.join(items)}]" if items else ""
 
 
-def compose(
+async def compose(
     category: dict[str, Any],
     merchant: dict[str, Any],
     trigger: dict[str, Any],
@@ -1028,7 +1030,8 @@ def compose(
         category_context_str = "\n".join(cat_insights)
 
         try:
-            llm_body, llm_rationale = llm_composer.draft_message(
+            llm_body, llm_rationale = await asyncio.to_thread(
+                llm_composer.draft_message,
                 category=category,
                 merchant=merchant,
                 trigger=trigger,
@@ -1131,14 +1134,12 @@ async def tick(body: TickBody):
     now = parse_dt(body.now) or utc_now()
     actions: list[dict[str, Any]] = []
     tick_started = time.monotonic()
-    tick_guard_deadline_s = 9.0
+    tick_guard_deadline_s = 25.0
     seen_pairs: set[tuple[str, str]] = set()
 
+    # Pre-filter triggers
+    valid_tasks = []
     for trg_id in body.available_triggers:
-        if (time.monotonic() - tick_started) > tick_guard_deadline_s:
-            break
-        if len(actions) >= 20:
-            break
         trg_rec = contexts.get(("trigger", trg_id))
         if not trg_rec:
             continue
@@ -1184,7 +1185,15 @@ async def tick(body: TickBody):
         if ns.closed:
             continue
 
-        composed = compose(category, merchant, trigger, customer)
+        valid_tasks.append((category, merchant, trigger, customer, trg_id, s_key, n_key, ns))
+
+    # Process in parallel with gather
+    async def _process_one(task):
+        category, merchant, trigger, customer, trg_id, s_key, n_key, ns = task
+        merchant_id = trigger.get("merchant_id")
+        customer_id = trigger.get("customer_id")
+        
+        composed = await compose(category, merchant, trigger, customer)
         conv_id = _next_conv_id(merchant_id, trg_id)
         conv = ConversationState(
             conversation_id=conv_id,
@@ -1213,23 +1222,36 @@ async def tick(body: TickBody):
             "suppression_key": composed["suppression_key"],
             "rationale": composed["rationale"],
         }
+        return action, conv, s_key, n_key, ns
 
-        pair = (action["merchant_id"], action["conversation_id"])
-        if pair in seen_pairs:
-            continue
-        seen_pairs.add(pair)
+    if valid_tasks:
+        # Cap at 20 as per brief §5
+        valid_tasks = valid_tasks[:20]
+        results = await asyncio.gather(*[_process_one(t) for t in valid_tasks], return_exceptions=True)
+        
+        for res in results:
+            if isinstance(res, Exception):
+                continue
+            if (time.monotonic() - tick_started) > tick_guard_deadline_s:
+                break
+                
+            action, conv, s_key, n_key, ns = res
+            pair = (action["merchant_id"], action["conversation_id"])
+            if pair in seen_pairs:
+                continue
+            seen_pairs.add(pair)
 
-        err = _validate_action_payload(action, conv)
-        if err:
-            continue
+            err = _validate_action_payload(action, conv)
+            if err:
+                continue
 
-        conv.message_hashes.add(text_hash(action["body"]))
-        conv.history.append({"role": "vera", "msg": action["body"]})
-        conversations[conv_id] = conv
-        suppression_sent[s_key] = utc_now_iso()
-        ns.sent_count += 1
-        nudge_state[n_key] = ns
-        actions.append(action)
+            conv.message_hashes.add(text_hash(action["body"]))
+            conv.history.append({"role": "vera", "msg": action["body"]})
+            conversations[action["conversation_id"]] = conv
+            suppression_sent[s_key] = utc_now_iso()
+            ns.sent_count += 1
+            nudge_state[n_key] = ns
+            actions.append(action)
 
     return {"actions": actions}
 
@@ -1246,6 +1268,8 @@ def detect_message_language(msg: str) -> Optional[str]:
     if re.search(r"[\u0A00-\u0A7F]", msg): return "pa-en mix" # Punjabi
     if re.search(r"[\u0A80-\u0AFF]", msg): return "gu-en mix" # Gujarati
     if re.search(r"[\u0D00-\u0D7F]", msg): return "ml-en mix" # Malayalam
+    if re.search(r"[\u0B00-\u0B7F]", msg): return "or-en mix" # Odia
+    if re.search(r"[\u0980-\u09FF]", msg): return "as-en mix" # Assamese (same script as Bengali, but distinct code)
     
     # Romanized keyword detection for high-frequency switch signals
     hindi_roman = ["karo", "hai", "nahi", "kya", "aap", "bol", "raha", "karun", "bhejo", "mat"]
