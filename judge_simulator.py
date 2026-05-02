@@ -422,7 +422,7 @@ class BotClient:
         })
 
     def tick(self, triggers):
-        return self._request("POST", "/v1/tick", 60, {
+        return self._request("POST", "/v1/tick", 15, {
             "now": datetime.utcnow().isoformat() + "Z", "available_triggers": triggers
         })
 
@@ -953,7 +953,6 @@ def main():
 
     # Run the judge
     judge = JudgeSimulator(llm)
-    # Process only the first 5 batches (25 triggers)
     success = judge.run(TEST_SCENARIO)
 
     sys.exit(0 if success else 1)
