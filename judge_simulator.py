@@ -24,10 +24,10 @@ Author: magicpin AI Challenge Team
 BOT_URL = "http://localhost:8080"
 
 # Choose your LLM provider: "openai", "anthropic", "gemini", "deepseek", "groq", "ollama", "openrouter"
-LLM_PROVIDER = "deepseek"
+LLM_PROVIDER = "openai"
 
 # Your API key (paste your key here)
-LLM_API_KEY = "sk-aa7ab0f6091e4f238bc5fc1d6f4ed313"  # <-- PUT YOUR API KEY HERE
+LLM_API_KEY = ""  # <-- PUT YOUR API KEY HERE
 
 # Model to use (leave empty for default, or specify like "gpt-4o", "claude-3-5-sonnet-20241022", etc.)
 LLM_MODEL = ""  # <-- Optional: specify model or leave empty for default
@@ -36,7 +36,7 @@ LLM_MODEL = ""  # <-- Optional: specify model or leave empty for default
 OLLAMA_URL = "http://localhost:11434"
 
 # Which test to run by default
-TEST_SCENARIO = "full_evaluation"
+TEST_SCENARIO = "all"
 
 # =============================================================================
 # ██████  END OF CONFIGURATION - DON'T EDIT BELOW THIS LINE ██████
@@ -844,7 +844,7 @@ class JudgeSimulator:
         score = self.scorer.score(action, category, merchant, trigger, customer)
         self.all_scores.append(score)
 
-        body = action.get("body", "")
+        body = action.get("body", "")[:50]
         print(f"\n{Colors.CYAN}Message:{Colors.RESET} \"{body}...\"")
 
         print_score_bar("Specificity", score.specificity)

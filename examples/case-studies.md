@@ -1,4 +1,4 @@
-\# 10 Case Studies — What "Good" Looks Like
+# 10 Case Studies — What "Good" Looks Like
 
 These case studies serve as anchor examples for the AI judge and as targets for candidates. Each shows:
 - The 4-context input
