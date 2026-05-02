@@ -365,9 +365,9 @@ class DatasetLoader:
                     self.categories[data.get("slug", f.stem)] = data
 
             for name, container, key in [
-                ("merchant_seed.json", "merchants", "merchant_id"),
-                ("customer_seed.json", "customers", "customer_id"),
-                ("trigger_seed.json", "triggers", "id")
+                ("merchants_seed.json", "merchants", "merchant_id"),
+                ("customers_seed.json", "customers", "customer_id"),
+                ("triggers_seed.json", "triggers", "id")
             ]:
                 path = self.dataset_dir / name
                 if path.exists():

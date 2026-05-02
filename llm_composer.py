@@ -81,6 +81,10 @@ def draft_message(
                 insight_context = f"\n- Relevant Insight: {item.get('title')} [Source: {src}]. {item.get('summary')}"
                 break
     
+    customer_cta_rule = ""
+    if scope == "customer":
+        customer_cta_rule = '\n11. ULTRA-LOW FRICTION CTA: Because this is a customer-facing message, if proposing slots, options, or products, YOU MUST format the CTA as multi-choice: "Reply 1 for [Choice A], 2 for [Choice B], or let us know your preference."'
+    
     system_prompt = f"""You are Vera, an expert AI partner for {cat_slug} on magicpin.
 Your task is to write a single WhatsApp message.
 
@@ -97,7 +101,7 @@ STRICT CONSTRAINTS (VIOLATION = FAILURE):
    - Salons/Gyms: Warm, coaching, practical.
    - Restaurants: Operator-to-operator.
 9. MANDATORY DATES: If the Trigger Payload contains a specific date (e.g., opened_date, expires_at), you MUST explicitly state that date in the message.
-10. ENGAGEMENT LEVERS: You MUST inject at least one psychological lever into the message: Loss Aversion (e.g., "don't let these potential patients drop off"), Social Proof (e.g., referencing high local search volume or views), or Curiosity.
+10. ENGAGEMENT COMPULSION: You MUST inject at least one psychological lever into the message to drive engagement compulsion: Loss Aversion (e.g., "don't let these potential patients drop off"), Social Proof (e.g., referencing high local search volume or views), or Curiosity.{customer_cta_rule}
 
 MESSAGE FLOW:
 1. Grounded Insight (use views, calls, or Relevant Insight with its Source).
@@ -130,6 +134,67 @@ Write the final WhatsApp message body now. NO META-TALK."""
         return llm_output, f"Single-Pass Optimized ({latency:.1f}s)"
     except Exception as e:
         return rule_body, f"Error: {str(e)}"
+
+def analyze_reply_context(history: List[Dict[str, str]], latest_message: str) -> Optional[Dict[str, str]]:
+    history_str = "\n".join([f"{h['role'].upper()}: {h['msg']}" for h in history[-3:]])
+    
+    system_prompt = """You are a conversational analyzer for a WhatsApp business bot.
+Analyze the user's latest message in the context of the conversation history.
+Output ONLY a raw JSON object with no markdown formatting or explanation.
+
+JSON SCHEMA:
+{
+  "hostility": "none" | "medium_frustration" | "high_hostile" | "hard_stop" | "auto_reply",
+  "intent": "qualification" | "action_commitment" | "off_topic",
+  "language": "en" | "hi" | "te" | "ta" | "kn" | "mr" | "bn" | "gu" | "pa" | "ml" 
+}
+
+LANGUAGE DETECTION RULES:
+- Detect the exact language used. If it's a mix of English and an Indic language (e.g., Hinglish, Tanglish) in Roman script, or pure Indic script, return the primary Indic language code (hi, te, ta, etc.).
+- If it's purely English, return "en".
+
+HOSTILITY RULES:
+- "hard_stop": Explicitly asks to stop messaging, unsubscribe, or block.
+- "high_hostile": Abusive, angry, or threatening language.
+- "medium_frustration": Annoyed but not abusive ("why are you messaging me?").
+- "auto_reply": "I am driving", "Out of office".
+
+INTENT RULES:
+- "action_commitment": User agrees to proceed, says "yes", "do it", "sure", "ok draft it", "okay".
+- "off_topic": User asks about unrelated topics.
+- "qualification": Default state. Answering questions or vague interest.
+"""
+
+    user_prompt = f"HISTORY:\n{history_str}\n\nUSER: {latest_message}\n\nAnalyze and return JSON:"
+
+    try:
+        req = urlrequest.Request(
+            "https://api.deepseek.com/v1/chat/completions",
+            data=json.dumps({
+                "model": LLM_MODEL, 
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                "temperature": 0.0,
+                "max_tokens": 100,
+                "response_format": {"type": "json_object"}
+            }).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {LLM_API_KEY}", 
+                "Content-Type": "application/json"
+            }
+        )
+        resp = urlrequest.urlopen(req, timeout=5)
+        data = json.loads(resp.read().decode("utf-8"))
+        content = data["choices"][0]["message"]["content"].strip()
+        
+        content = re.sub(r"^```json\s*", "", content, flags=re.I)
+        content = re.sub(r"\s*```$", "", content)
+        
+        return json.loads(content)
+    except Exception as e:
+        return None
 
 def respond(
     category: Dict[str, Any],

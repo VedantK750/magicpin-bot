@@ -22,7 +22,7 @@ def run_extraction():
 
     # Initialize client, dataset and scorer
     client = judge_simulator.BotClient(judge_simulator.BOT_URL)
-    dataset = judge_simulator.DatasetLoader(Path(__file__).parent / "surprise_dataset")
+    dataset = judge_simulator.DatasetLoader(Path(__file__).parent / "dataset")
     
     if not dataset.load():
         print("Failed to load dataset.")

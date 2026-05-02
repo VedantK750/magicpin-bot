@@ -24,6 +24,7 @@ contexts: dict[tuple[str, str], dict[str, Any]] = {}
 conversations: dict[str, "ConversationState"] = {}
 suppression_sent: dict[tuple[str, str, str], str] = {}
 nudge_state: dict[tuple[str, str, str], "NudgeState"] = {}
+global_auto_reply_count: dict[tuple[str, str], int] = {}
 conv_counter = 0
 
 
@@ -1276,8 +1277,29 @@ async def reply(body: ReplyBody):
     # Store user message in history
     conv.history.append({"role": "user", "msg": msg})
 
-    # --- Rule-Based Policy Decisions ---
+    # --- Dual-Layer Intelligence ---
+    llm_analysis = llm_composer.analyze_reply_context(conv.history, msg)
+    llm_pref = None
+    llm_intent = None
+    is_auto_reply = looks_auto_reply(msg)
+    
     signal = detect_hostility_signal(msg)
+
+    if llm_analysis:
+        h_level = llm_analysis.get("hostility", "none")
+        llm_intent = llm_analysis.get("intent", "qualification")
+        
+        if h_level == "hard_stop": signal = HostilitySignal("hard_stop", 1.0)
+        elif h_level == "high_hostile": signal = HostilitySignal("high_hostile", 1.0)
+        elif h_level == "medium_frustration": signal = HostilitySignal("medium_frustration", 1.0)
+        elif h_level == "auto_reply": is_auto_reply = True
+        
+        llm_pref_raw = llm_analysis.get("language")
+        if llm_pref_raw and llm_pref_raw != "en":
+            llm_pref = f"{llm_pref_raw}-en mix"
+        elif llm_pref_raw == "en":
+            llm_pref = "english"
+
     if signal.kind == "hard_stop":
         _close_conversation(conv)
         return {"action": "end", "rationale": "Detected explicit opt-out/not-interested signal; closing immediately."}
@@ -1304,9 +1326,12 @@ async def reply(body: ReplyBody):
         out_cta = "binary_yes_no"
         out_rationale = "Medium-confidence frustration detected; sent one de-escalation step."
 
-    elif looks_auto_reply(msg):
-        conv.auto_reply_count += 1
-        if conv.auto_reply_count == 1:
+    elif is_auto_reply:
+        ar_key = (body.merchant_id or "", body.customer_id or "")
+        global_auto_reply_count[ar_key] = global_auto_reply_count.get(ar_key, 0) + 1
+        current_ar_count = global_auto_reply_count[ar_key]
+        
+        if current_ar_count == 1:
             first_action = _auto_reply_first_action(conv)
             if first_action == "wait":
                 wait_seconds = env_int("AUTO_REPLY_WAIT_SECONDS", 14400)
@@ -1315,12 +1340,15 @@ async def reply(body: ReplyBody):
             out_body = "Looks like an auto-reply. When the owner is available, reply YES and I will continue from here."
             out_cta = "binary_yes_no"
             out_rationale = "Detected canned auto-reply; policy selected one owner-directed nudge on first occurrence."
-        elif conv.auto_reply_count >= 3:
+        elif current_ar_count >= 3:
             _close_conversation(conv)
             return {"action": "end", "rationale": "Auto-reply repeated 3 times with no engagement; ending conversation."}
-        elif conv.auto_reply_count == 2:
-            wait_seconds = env_int("AUTO_REPLY_WAIT_SECONDS", 14400)
-            return {"action": "wait", "wait_seconds": max(300, wait_seconds), "rationale": "Repeated auto-reply; backing off before retry."}
+        elif current_ar_count == 2:
+            _close_conversation(conv)
+            policy_intent = "GRACEFUL_EXIT"
+            out_body = "Understood. I will leave a note and connect with the owner later. Have a good day."
+            out_cta = "open_ended"
+            out_rationale = "Second consecutive auto-reply detected; closing conversation gracefully with a final send."
 
     else:
         # Any non-auto inbound is meaningful engagement
@@ -1329,7 +1357,7 @@ async def reply(body: ReplyBody):
         ns.engaged = True
         nudge_state[n_key] = ns
 
-        if looks_action_intent(msg):
+        if llm_intent == "action_commitment" or (not llm_analysis and looks_action_intent(msg)):
             policy_intent = "ACTION_COMMITMENT"
             artifact_reply = _artifact_reply_for_action_intent(conv, msg)
             if artifact_reply:
@@ -1341,7 +1369,7 @@ async def reply(body: ReplyBody):
                 out_cta = "binary_confirm_cancel"
                 out_rationale = "Detected explicit commitment; switched from qualification to action mode."
 
-        elif looks_off_topic(msg):
+        elif llm_intent == "off_topic" or (not llm_analysis and looks_off_topic(msg)):
             policy_intent = "OFF_TOPIC_REDIRECT"
             out_body = "I should leave GST/CA work to your accountant. On this thread, I can help with the current business trigger. Want me to continue?"
             out_cta = "open_ended"
@@ -1362,7 +1390,7 @@ async def reply(body: ReplyBody):
         customer = contexts.get(("customer", conv.customer_id), {}).get("payload", {}) if conv.customer_id else None
         
         # Per-turn language switch detection
-        detected_pref = detect_message_language(msg)
+        detected_pref = llm_pref or detect_message_language(msg)
         pref = detected_pref if detected_pref else language_pref(customer, merchant)
 
         llm_reply, llm_rationale = llm_composer.respond(
@@ -1393,6 +1421,7 @@ async def teardown():
     conversations.clear()
     suppression_sent.clear()
     nudge_state.clear()
+    global_auto_reply_count.clear()
     global conv_counter
     conv_counter = 0
     return {"ok": True, "wiped_at": utc_now_iso()}
