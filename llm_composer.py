@@ -249,9 +249,9 @@ def respond(
     mix_lang = _get_mix_lang(language_pref)
     history_str = "\n".join([f"{h['role'].upper()}: {h['msg']}" for h in history[-3:]])
     
-    lang_instruction = f"Natural {mix_lang}-English mix."
+    lang_instruction = f"MANDATORY CODE-MIXING: Use a natural mix of {mix_lang} and English in Roman script."
     if mix_lang == "English":
-        lang_instruction = "Use clear, professional English."
+        lang_instruction = "LANGUAGE: Use clear, professional English."
 
     biz_name = merchant.get('identity', {}).get('name')
     if from_role == "customer":
