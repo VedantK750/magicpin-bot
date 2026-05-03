@@ -1371,11 +1371,8 @@ async def reply(body: ReplyBody):
             _close_conversation(conv)
             return {"action": "end", "rationale": "Auto-reply repeated 3 times with no engagement; ending conversation."}
         elif current_ar_count == 2:
-            _close_conversation(conv)
-            policy_intent = "GRACEFUL_EXIT"
-            out_body = "Understood. I will leave a note and connect with the owner later. Have a good day."
-            out_cta = "open_ended"
-            out_rationale = "Second consecutive auto-reply detected; closing conversation gracefully with a final send."
+            wait_seconds = env_int("AUTO_REPLY_WAIT_SECONDS", 14400)
+            return {"action": "wait", "wait_seconds": max(300, wait_seconds), "rationale": "Second consecutive auto-reply detected; backing off before retry."}
 
     else:
         # Any non-auto inbound is meaningful engagement
@@ -1385,16 +1382,22 @@ async def reply(body: ReplyBody):
         nudge_state[n_key] = ns
 
         if llm_intent == "action_commitment" or (not llm_analysis and looks_action_intent(msg)):
-            policy_intent = "ACTION_COMMITMENT"
-            artifact_reply = _artifact_reply_for_action_intent(conv, msg)
-            if artifact_reply:
-                out_body = artifact_reply["body"]
-                out_cta = artifact_reply["cta"]
-                out_rationale = "Detected explicit commitment plus concrete artifact request; returned requested artifacts in the same turn."
+            if body.from_role == "customer":
+                policy_intent = "CONFIRM_BOOKING"
+                out_body = "Your request has been received. I will confirm the details shortly."
+                out_cta = "open_ended"
+                out_rationale = "Customer slot confirmation intent detected."
             else:
-                out_body = "Great. Moving to action now: I can draft the exact next message and checklist in one go. Reply CONFIRM to proceed."
-                out_cta = "binary_confirm_cancel"
-                out_rationale = "Detected explicit commitment; switched from qualification to action mode."
+                policy_intent = "ACTION_COMMITMENT"
+                artifact_reply = _artifact_reply_for_action_intent(conv, msg)
+                if artifact_reply:
+                    out_body = artifact_reply["body"]
+                    out_cta = artifact_reply["cta"]
+                    out_rationale = "Detected explicit commitment plus concrete artifact request; returned requested artifacts in the same turn."
+                else:
+                    out_body = "Great. Moving to action now: I can draft the exact next message and checklist in one go. Reply CONFIRM to proceed."
+                    out_cta = "binary_confirm_cancel"
+                    out_rationale = "Detected explicit commitment; switched from qualification to action mode."
 
         elif llm_intent == "off_topic" or (not llm_analysis and looks_off_topic(msg)):
             policy_intent = "OFF_TOPIC_REDIRECT"
@@ -1429,7 +1432,8 @@ async def reply(body: ReplyBody):
             latest_message=msg,
             policy_intent=policy_intent,
             rule_body=out_body,
-            language_pref=pref
+            language_pref=pref,
+            from_role=body.from_role
         )
         out_body = llm_reply
         out_rationale += f" | {llm_rationale}"

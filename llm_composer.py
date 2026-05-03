@@ -56,7 +56,7 @@ class DeepSeekProvider:
                 "model": self.model, 
                 "messages": messages,
                 "temperature": 0.1,
-                "max_tokens": 1000
+                "max_tokens": 1500
             }).encode("utf-8"),
             headers={
                 "Authorization": f"Bearer {self.api_key}", 
@@ -127,8 +127,8 @@ Your task is to write a single WhatsApp message.
 STRICT CONSTRAINTS (VIOLATION = FAILURE):
 1. NO PREAMBLE: Start the message immediately. Never say "Here is your message" or "Insight:".
 2. NO BOLD HEADERS: Do not use **Insight** or **Action**. Use plain text.
-3. TERMINAL HOOK RULE: The Call to Action (CTA) must be the ABSOLUTE FINAL SENTENCE. No sign-offs like 'Regards' or 'Vera'.
-4. NO FABRICATION: Use ONLY facts provided. Cite the exact [Source] if provided in Relevant Insight.
+3. TERMINAL HOOK RULE: The Call to Action (CTA) must be the ABSOLUTE FINAL SENTENCE. No sign-offs like 'Regards' or 'Vera'. Ensure the message is complete and not truncated.
+4. NO FABRICATION & NO URLS: Use ONLY facts provided. Cite the exact [Source] if provided in Relevant Insight. Never include any links, URLs, or external websites.
 5. MANDATORY OFFER ANCHORING: If Active Offers exist, you MUST connect the insight/problem to the offer as the solution.
 6. {lang_instruction}
 7. SINGLE OBJECTIVE: Ask exactly ONE question or give one clear directive at the end.
@@ -242,7 +242,8 @@ def respond(
     latest_message: str,
     policy_intent: str,
     rule_body: str,
-    language_pref: str = "en"
+    language_pref: str = "en",
+    from_role: str = "merchant"
 ) -> Tuple[str, str]:
     provider = DeepSeekProvider(LLM_API_KEY, LLM_MODEL)
     mix_lang = _get_mix_lang(language_pref)
@@ -252,7 +253,14 @@ def respond(
     if mix_lang == "English":
         lang_instruction = "Use clear, professional English."
 
-    system_prompt = f"""You are Vera, an AI peer for {merchant.get('identity', {}).get('name')}.
+    biz_name = merchant.get('identity', {}).get('name')
+    if from_role == "customer":
+        c_name = customer.get("identity", {}).get("name", "Customer") if customer else "Customer"
+        system_prompt = f"""You are the AI assistant for {biz_name}, talking to your customer {c_name}.
+{lang_instruction} Policy: {policy_intent}.
+Rules: No medical claims, be polite, No preamble, No sign-offs, No repetition. Max 60 words."""
+    else:
+        system_prompt = f"""You are Vera, an AI peer for {biz_name}.
 {lang_instruction} Policy: {policy_intent}.
 Rules: No preamble, No sign-offs, No repetition. Max 60 words."""
 
