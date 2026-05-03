@@ -18,7 +18,7 @@ load_dotenv()
 import llm_composer
 
 
-app = FastAPI(title="magicpin-challenge-bot", version="0.1.0")
+app = FastAPI(title="magicpin-challenge-bot", version="0.2.0")
 START_TS = time.time()
 
 ALLOWED_SCOPES = {"category", "merchant", "customer", "trigger"}
@@ -1102,11 +1102,11 @@ async def metadata():
     return {
         "team_name": "Team Vedant",
         "team_members": ["Vedant"],
-        "model": "Vera_Hybrid_LLM_v1",
+        "model": "Vera_Hybrid_LLM_v2",
         "approach": "hybrid rule-based safety + deepseek-chat drafting with dynamic context injection",
         "contact_email": "na@example.com",
-        "version": "0.1.0",
-        "submitted_at": "2026-04-30T00:00:00Z",
+        "version": "0.2.0",
+        "submitted_at": "2026-05-02T12:00:00Z",
     }
 
 
